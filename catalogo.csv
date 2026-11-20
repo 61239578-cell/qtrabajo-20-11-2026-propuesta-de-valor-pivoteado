@@ -1,0 +1,61 @@
+﻿id,categoria,nombre,estilo,precio,precio_anterior,etiqueta,siluetas,colores,tela,cuidados,agotadas,genero,nuevo,imagen,stock_json,descripcion
+v1,vestido,Vestido envolvente,Elegante,99,119,-17%,reloj;pera;manzana,Terracota;Verde;Negro;Azul,Crepé elástico,"Lavar en frío, no usar secadora",,mujer,,,,
+v2,vestido,Vestido línea A,Casual,89,119,-25%,manzana;inv;rect,Azul;Mostaza;Negro;Verde,Crepé elástico,"Lavar en frío, no usar secadora",L;5XL,mujer,,,,
+v3,vestido,Vestido midi fluido,Elegante,99,119,-17%,pera;reloj;rect,Verde;Terracota;Negro;Crema,Crepé elástico,"Lavar en frío, no usar secadora",,mujer,,,,
+b1,top,Blusa fluida,Moderno,59,69,-14%,pera;rect;reloj,Crema;Terracota;Verde;Azul,Algodón con elastano,Lavar a máquina en frío,,mujer,,,,
+b2,top,Polo básico,Casual,39,49,-20%,reloj;pera;manzana;rect;inv,Negro;Crema;Azul;Mostaza,Algodón con elastano,Lavar a máquina en frío,5XL,mujer,,,,
+b3,top,Camisa oversize,Clásico,74,109,-32%,manzana;inv;rect,Crema;Azul;Negro;Verde,Algodón con elastano,Lavar a máquina en frío,,mujer,,,,
+b4,top,Top cruzado,Moderno,64,74,-14%,reloj;pera;manzana,Verde;Negro;Terracota;Crema,Algodón con elastano,Lavar a máquina en frío,,mujer,,,,
+b5,top,Blusa manga larga,Casual,64,74,-14%,pera;rect;inv,Mostaza;Crema;Negro;Verde,Algodón con elastano,Lavar a máquina en frío,,mujer,,,,
+b6,top,Suéter tejido,Clásico,84,119,-29%,reloj;rect;manzana,Terracota;Verde;Crema;Negro,Tejido suave,Lavar a mano,,mujer,,,,
+c1,casaca,Casaca larga,Urbano,94,119,-21%,manzana;reloj;rect,Negro;Azul;Terracota;Verde,Mezcla de poliéster,Lavado en seco o a mano,,mujer,,,,
+c2,casaca,Casaca estructurada,Clásico,89,109,-18%,pera;rect,Negro;Crema;Mostaza;Azul,Mezcla de poliéster,Lavado en seco o a mano,,mujer,,,,
+c3,casaca,Blazer largo,Elegante,99,119,-17%,pera;reloj;manzana,Negro;Azul;Crema;Terracota,Mezcla de poliéster,Lavado en seco o a mano,2XL,mujer,,,,
+c4,casaca,Cárdigan largo,Casual,84,99,-15%,manzana;pera;rect,Crema;Negro;Azul;Terracota,Tejido suave,Lavar a mano,,mujer,,,,
+c5,casaca,Bomber urbana,Urbano,94,114,-18%,inv;rect;reloj,Verde;Negro;Azul;Mostaza,Mezcla de poliéster,Lavado en seco o a mano,,mujer,,,,
+p1,pantalon,Pantalón tiro alto,Moderno,99,119,-17%,reloj;manzana;rect,Negro;Azul;Mostaza;Verde,Algodón stretch,"Lavar a máquina, planchar a temperatura media",3XL,mujer,,,,
+p2,pantalon,Pantalón recto,Clásico,84,99,-15%,inv;pera;reloj;rect,Negro;Crema;Azul;Terracota,Algodón stretch,"Lavar a máquina, planchar a temperatura media",,mujer,,,,
+p3,pantalon,Pantalón fluido,Casual,84,104,-19%,pera;manzana;rect,Crema;Verde;Negro;Mostaza,Algodón stretch,"Lavar a máquina, planchar a temperatura media",,mujer,,,,
+p4,pantalon,Pantalón cargo,Urbano,89,109,-18%,pera;manzana;rect,Crema;Verde;Negro;Azul,Algodón stretch,"Lavar a máquina, planchar a temperatura media",,mujer,,,,
+p5,pantalon,Pantalón sastre,Elegante,99,119,-17%,reloj;pera;rect,Negro;Azul;Crema;Mostaza,Algodón stretch,"Lavar a máquina, planchar a temperatura media",,mujer,,,,
+m1,top,Polo clásico,Casual,39,59,-34%,rect;inv,Negro;Azul;Gris,Algodón con elastano,Lavar a máquina en frío,,hombre,,,,
+m2,camisa,Camisa Oxford,Clásico,74,99,-25%,rect;inv,Blanco;Azul;Crema,Algodón,Lavar a máquina en frío,,hombre,,,,
+m3,pantalon,Pantalón chino,Casual,84,104,-19%,rect;inv,Crema;Negro;Azul,Algodón stretch,Lavar a máquina en frío,,hombre,,,,
+m4,casaca,Casaca impermeable,Urbano,99,119,-17%,rect;inv,Negro;Azul;Verde,Poliéster impermeable,Lavar según etiqueta,,hombre,,,,
+m5,top,Polo deportivo,Deportivo,49,64,-23%,rect;inv,Negro;Azul;Gris,Poliéster transpirable,Lavar a máquina en frío,,hombre,,,,
+m6,pantalon,Jogger deportivo,Deportivo,74,94,-21%,rect;inv,Negro;Gris,Algodón con elastano,Lavar a máquina en frío,,hombre,,,,
+m7,top,Polo premium,Casual,49,59,-17%,rect;inv,Verde;Negro;Azul,Algodón pima,Lavar a máquina en frío,,hombre,,,,
+m8,casaca,Casaca softshell,Urbano,94,119,-21%,rect;inv,Negro;Verde;Azul,Poliéster resistente al viento,Lavar según etiqueta,,hombre,,,,
+m9,top,Suéter tejido,Clásico,74,94,-21%,rect;inv,Azul;Crema;Negro,Tejido suave,Lavar a mano,,hombre,,,,
+m10,short,Short deportivo,Deportivo,49,64,-23%,rect;inv,Negro;Azul;Gris,Poliéster de secado rápido,Lavar a máquina en frío,,hombre,,,,
+m11,deportivo,Polerón con capucha,Deportivo,59,74,-20%,rect;inv,Gris;Negro;Azul,Algodón y poliéster,Lavar a máquina en frío,,hombre,,,,
+m12,accesorio,Mochila urbana,Urbano,69,84,-18%,rect;inv,Negro;Azul;Gris,Poliéster,Limpiar con paño húmedo,,hombre,,,,
+v4,vestido,Vestido negro clásico,Elegante,94,119,-21%,reloj;pera;rect,Negro,Crepé elástico,"Lavar en frío, no usar secadora",,mujer,si,,,
+p6,falda,Falda midi negra,Urbano,79,94,-16%,reloj;pera;rect,Negro,Tela fluida,Lavar en frío,,mujer,si,,,
+m13,top,Polo blanco esencial,Casual,39,49,-20%,rect;inv,Blanco,Algodón con elastano,Lavar a máquina en frío,,hombre,si,,,
+m14,camisa,Camisa a cuadros,Casual,79,99,-20%,rect;inv,Azul;Negro,Algodón,Lavar a máquina en frío,,hombre,si,,,
+m15,pantalon,Pantalón casual negro,Clásico,79,99,-20%,rect;inv,Negro,Algodón stretch,Lavar a máquina en frío,,hombre,si,,,
+m16,casaca,Casaca beige urbana,Urbano,99,119,-17%,rect;inv,Crema,Mezcla de poliéster,Lavar según etiqueta,,hombre,si,,,
+m17,accesorio,Gorra urbana negra,Urbano,29,39,-26%,rect;inv,Negro,Algodón,Limpiar con paño húmedo,,hombre,si,,,
+m19,top,Polo deportivo ligero,Deportivo,44,59,-25%,rect;inv,Negro;Azul,Poliéster transpirable,Lavar a máquina en frío,,hombre,si,,,
+nf01,top,Polo ribbed de manga corta,Casual minimalista,,,,,,Por confirmar,Por confirmar,,mujer,si,nf01.webp,,"Polo entallado de canalé fino, manga corta y acabado limpio. Una base versátil para combinar con pantalones o faldas."
+nf02,top,Polo estampado,Urbano,,,,,,Por confirmar,Por confirmar,,mujer,si,nf02.webp,,Camiseta de corte regular con gráfico contemporáneo en el frente. Una pieza casual para looks de diario.
+nf03,top,Blusa de cuello mao elegante,Elegante casual,,,,,,Por confirmar,Por confirmar,,mujer,si,nf03.webp,,"Blusa de cuello mao y líneas limpias, con caída ligera y un estilo elegante casual para combinar con prendas de vestir o conjuntos relajados."
+nf04,top,Blusa sin mangas,Casual fresco,,,,,,Por confirmar,Por confirmar,,mujer,si,nf04.webp,,"Blusa sin mangas de silueta sencilla y hombros despejados, adecuada para días cálidos y capas ligeras."
+nf05,top,Top de cuello cuadrado,Contemporáneo,,,,,,Por confirmar,Por confirmar,,mujer,si,nf05.webp,,"Top de escote cuadrado y líneas definidas, con una silueta actual que funciona tanto sola como bajo una chaqueta."
+nf06,top,Body ajustado de manga larga,Contemporáneo,,,,,,Por confirmar,Por confirmar,,mujer,si,nf06.webp,,"Body de manga larga y acabado liso, una alternativa de una sola pieza para crear conjuntos coordinados."
+nf07,top,Polo oversize liso,Urbano relajado,,,,,,Por confirmar,Por confirmar,,mujer,si,nf07.webp,,"Polo de camiseta con hombro caído y volumen amplio, sin estampado, para un estilo urbano relajado."
+nf08,top,Oversize gráfico,Urbano gráfico,,,,,,Por confirmar,Por confirmar,,mujer,si,nf08.webp,,Camiseta amplia con ilustración gráfica protagonista y proporciones holgadas.
+nf09,deportivo,Polera corta,Casual juvenil,,,,,,Por confirmar,Por confirmar,,mujer,si,nf09.webp,,"Sudadera corta de largo a la cintura y acabado casual, pensada para combinar con prendas de tiro alto."
+nf10,deportivo,Hoodie clásico,Casual urbano,,,,,,Por confirmar,Por confirmar,,mujer,si,nf10.webp,,"Sudadera con capucha, bolsillo frontal y silueta clásica. Una prenda cómoda para capas y uso cotidiano."
+nf11,casaca,Chaqueta denim,Casual,,,,,,Por confirmar,Por confirmar,,mujer,si,nf11.webp,,"Chaqueta de mezclilla con cuello camisero, cierre frontal de botones y bolsillos funcionales."
+nf12,casaca,Chaqueta varsity,Urbano,,,,,,Por confirmar,Por confirmar,,mujer,si,nf12.webp,,"Chaqueta de inspiración universitaria con contraste en cuello y puños, distinta de la bomber ya presente en el catálogo."
+nh01,top,Polo de punto texturizado,Casual premium,,,,,,Por confirmar,Por confirmar,,hombre,si,nh01.webp,,"Polo de punto con textura visible y acabado cuidado, una alternativa diferenciada al polo premium liso existente."
+nh02,top,Polo de cuello camisero,Casual elegante,,,,,,Por confirmar,Por confirmar,,hombre,si,nh02.webp,,"Polo con cuello camisero y tapeta frontal corta, pensado para un estilo casual más pulido."
+nh03,camisa,Camisa de lino,Casual fresco,,,,,,Por confirmar,Por confirmar,,hombre,si,nh03.webp,,"Camisa ligera de inspiración natural, con cuello clásico y botonadura frontal para conjuntos frescos."
+nh04,camisa,Camisa de rayas verticales,Casual,,,,,,Por confirmar,Por confirmar,,hombre,si,nh04.webp,,Camisa con patrón de rayas verticales y cuello clásico. Se diferencia de la camisa a cuadros que ya existe.
+nh05,top,Polo oversize,Urbano relajado,,,,,,Por confirmar,Por confirmar,,hombre,si,nh05.webp,,"Polo de camiseta de corte amplio, hombro caído y largo relajado para una silueta urbana."
+nh06,top,Oversize estampado,Urbano gráfico,,,,,,Por confirmar,Por confirmar,,hombre,si,nh06.webp,,Camiseta masculina amplia con estampado gráfico original en el frente y estilo streetwear.
+nh07,deportivo,Polera de cuello redondo,Minimalista,,,,,,Por confirmar,Por confirmar,,hombre,si,nh07.webp,,"Sudadera de cuello redondo, sin capucha y con diseño limpio para capas casuales."
+nh08,deportivo,Hoodie con cierre,Urbano funcional,,,,,,Por confirmar,Por confirmar,,hombre,si,nh08.webp,,"Sudadera con capucha y cremallera frontal completa, diferenciada del polerón cerrado existente."
+nh09,casaca,Chaqueta ligera,Urbano versátil,,,,,,Por confirmar,Por confirmar,,hombre,si,nh09.webp,,"Chaqueta ligera de líneas sencillas, con cierre frontal y bolsillos discretos para uso diario."
