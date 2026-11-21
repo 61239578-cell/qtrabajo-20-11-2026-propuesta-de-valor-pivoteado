@@ -65,6 +65,7 @@ var CAT=[
 ['nf14','top','Top negro sin mangas cuello alto','Minimalista',55,69,'-20%',['reloj','pera','manzana','rect','inv'],['Negro'],'mujer'],
 ['nf15','top','Top tejido a rayas','Contemporáneo',59,62,'-5%',['reloj','pera','rect'],['Negro','Blanco'],'mujer'],
 ].map(function(a,i){return{id:a[0],k:a[1],n:a[2],e:a[3],pr:a[4],old:a[5],bd:a[6],b:a[7],c:a[8],gender:a[9]||'mujer',tint:TINT[i%4],stock:{},ag:[],description:a[10]||'',mat:a[11]||'',cu:a[12]||'',nuevo:(['m13','m14','m15','m16','m17','m19','v4','p6'].indexOf(a[0])>-1 || /^n[fh]\d{2}$/.test(a[0]))}});
+IMG.nf13='assets/img/nf13.jpg';IMG.nf14='assets/img/nf14.jpg';IMG.nf15='assets/img/nf15.jpg';
 try{var sm=JSON.parse(localStorage.getItem('sfc_m')||'null')}catch(e){var sm=null}
 var S={n:0,m:{altura:'',pecho:'',cintura:'',cadera:''},err:'',sx:-1,body:'',gender:'mujer',ref:'mujer',it:null,col:'',sz:-1,est:0,r:{},pend:null,out:'',mem:0,started:Date.now()};if(sm){S.m=sm;S.mem=1}
 var CART=[],FAV=[];try{CART=JSON.parse(localStorage.getItem('sfc_cart')||'[]')}catch(e){CART=[]}try{FAV=JSON.parse(localStorage.getItem('sfc_fav')||'[]')}catch(e){FAV=[]}
