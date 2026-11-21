@@ -47,7 +47,7 @@ window.CONFIG = {
   // Esta imagen se muestra en la sección "#pago" cuando alguien confirma un pedido.
   // Cámbiala por tu propio QR de Yape/Plin cuando quieras; sigue siendo una SIMULACIÓN.
   PAGO_QR: {
-    IMAGEN: 'qr-yape.jpeg',
+   IMAGEN: 'assets/img/qr-yape.jpeg',
     TITULAR: 'ZARIK B ZEVALLOS SULLA',
     APP: 'Yape',
     NOTA: ' Este QR se muestra solo para simular el flujo de pago.'
