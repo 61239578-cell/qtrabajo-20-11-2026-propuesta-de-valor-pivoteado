@@ -11,7 +11,7 @@
 // 3) EFECTOS: cada efecto se apaga poniendo false. EFECTOS: false apaga todos.
 window.CONFIG = {
   ENDPOINT: 'https://script.google.com/macros/s/AKfycbwln34HLmQqSMbr2KKVuzlcaNQpI9eIA0lSHC3kxN6mFWMFFeiR-mb6R8SGs24q01w/exec',
-  WHATSAPP: '51938703934',   // WhatsApp de Smart Fit Cusco: +51 938 703 934
+  WHATSAPP: '51944182573',   // WhatsApp de Smart Fit Cusco: +51 938 703 934
   CATALOGO_URL: 'https://script.google.com/macros/s/AKfycbwln34HLmQqSMbr2KKVuzlcaNQpI9eIA0lSHC3kxN6mFWMFFeiR-mb6R8SGs24q01w/exec?catalogo=1', // Catálogo servido por Apps Script desde la pestaña Catalogo
   SITIO_URL: '',             // ej: 'https://tuusuario.github.io/smart-fit-cusco' (mejora las vistas previas al compartir)
   IDIOMA: 'es',              // idioma inicial: 'es' o 'en' (la persona puede cambiarlo con el botón ES/EN)
