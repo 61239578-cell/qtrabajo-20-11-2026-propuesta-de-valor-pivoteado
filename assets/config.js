@@ -47,10 +47,10 @@ window.CONFIG = {
   // Esta imagen se muestra en la sección "#pago" cuando alguien confirma un pedido.
   // Cámbiala por tu propio QR de Yape/Plin cuando quieras; sigue siendo una SIMULACIÓN.
   PAGO_QR: {
-    IMAGEN: 'assets/img/yape-qr-eliot.png',
-    TITULAR: 'Eliot Brayan Ttito Carrion',
+    IMAGEN: 'qr-yape.jpeg',
+    TITULAR: 'ZARIK B ZEVALLOS SULLA',
     APP: 'Yape',
-    NOTA: 'DEMO — Este QR se muestra solo para simular el flujo de pago dentro de la prueba de usabilidad. No se procesan cobros reales.'
+    NOTA: ' Este QR se muestra solo para simular el flujo de pago.'
   },
 
   // ---------- Analítica ligera (apagada por defecto) ----------
