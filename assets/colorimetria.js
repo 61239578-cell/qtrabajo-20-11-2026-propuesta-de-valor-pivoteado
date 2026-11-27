@@ -61,6 +61,23 @@
     });
     return out.sort(function (a, b) { return a.d - b.d; }).slice(0, 6);
   }
+  function recomendarTodas(sub, genero) {
+    var pal = PALETAS[sub].map(function (p) { return cssLab(p[1]); }), out = [];
+    (window.CAT || []).forEach(function (c) {
+      if (!(Number(c.pr) > 0)) return;
+      if (genero && c.gender !== genero) return;
+      var mejor = null;
+      (c.c || []).forEach(function (n) {
+        var v = window.COL && window.COL[n]; if (!v) return;
+        var l = cssLab(v), d = Math.min.apply(null, pal.map(function (p) { return dist(l, p); }));
+        if (!mejor || d < mejor.d) mejor = { d: d, color: n };
+      });
+      if (mejor) out.push({ c: c, d: mejor.d, color: mejor.color });
+    });
+    out.sort(function (a, b) { return a.d - b.d; });
+    out.forEach(function (x) { x.nivel = x.d < 15 ? '⭐ Te favorece mucho' : (x.d < 40 ? '✓ Te favorece' : '○ Combínala con tus colores'); });
+    return out;
+  }
   async function cargarMP() {
     if (landmarker) return landmarker;
     var m = await import(BASE + '/vision_bundle.mjs');
@@ -120,15 +137,15 @@
       var s = document.createElement('span'); s.className = 'col-sw';
       var i = document.createElement('i'); i.style.background = c[1]; s.appendChild(i); s.appendChild(document.createTextNode(c[0])); r.appendChild(s);
     });
-    var t2 = document.createElement('p'); t2.textContent = 'Prendas de la tienda en esos tonos:'; r.appendChild(t2);
+    var t2 = document.createElement('p'); t2.textContent = 'Todas las prendas de ' + generoSel + ', de la que más a la que menos te favorece:'; r.appendChild(t2);
     var g = document.createElement('div'); g.className = 'col-g';
-        recomendar(res.sub, generoSel).forEach(function (x) {
+        recomendarTodas(res.sub, generoSel).forEach(function (x) {
       var a = document.createElement('a'); a.className = 'col-c'; a.href = '#producto/' + encodeURIComponent(x.c.id);
       a.onclick = function () { cerrar(); };
       var f = (window.IMG || {})[x.c.id + '_' + x.color] || (window.IMG || {})[x.c.id];
       if (f) { var im = document.createElement('img'); im.src = f; im.alt = x.c.n; a.appendChild(im); }
       var n = document.createElement('b'); n.textContent = x.c.n; a.appendChild(n);
-      var d = document.createElement('div'); d.textContent = 'Color: ' + x.color + ' · S/ ' + Number(x.c.pr).toFixed(2); a.appendChild(d);
+      var d = document.createElement('div'); d.textContent = x.nivel + ' · Color: ' + x.color + ' · S/ ' + Number(x.c.pr).toFixed(2); a.appendChild(d);
       g.appendChild(a);
     });
     r.appendChild(g);
