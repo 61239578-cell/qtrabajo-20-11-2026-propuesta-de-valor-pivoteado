@@ -143,6 +143,17 @@ function FX_MARQ(){var t=['Precios rebajados en toda la colección','5% adiciona
 function lookbook(){var L=(CFG.LOOKBOOK||[]).filter(function(x){return IMG[x.k]});if(!L.length)return'';var ks=L.map(function(y){return y.k}).join('|');return'<section class="sec"><div class="w"><div class="hd"><h2>Looks de temporada</h2><a href="#tienda" class="up">Ver tienda</a></div><div class="lk" role="list">'+L.map(function(x,i){return'<button type="button" class="lkb" role="listitem" data-lbk="'+ks+'" data-lbi="'+i+'" aria-label="Ampliar foto: '+x.t+'"><span class="lki"><img class="ph" src="'+IMG[x.k]+'" alt="'+x.alt+'" loading="lazy" decoding="async" onerror="this.remove()"></span><em>'+x.t+'</em></button>'}).join('')+'</div></div></section>'}
 
 /* ---------- Páginas ---------- */
+var CALIDAD={
+vestido:'Crepé elástico de caída suave que se adapta a tu cuerpo sin apretar. Corte pensado para tallas XS a 5XL, con holgura cómoda en busto, cintura y cadera. Fácil de cuidar: lavar en frío y no usar secadora.',
+top:'Algodón con elastano: suave, fresco y con elasticidad que acompaña tu movimiento. Cuello y costuras cómodos, pensados para el uso diario. Se lava a máquina en frío.',
+camisa:'Algodón liviano y transpirable, con caída cómoda y cortes amplios en talla grande. Ideal para el uso diario o para la oficina. Se lava a máquina en frío.',
+casaca:'Mezcla de poliéster resistente que mantiene su forma y abriga sin pesar. Corte amplio para llevar una prenda debajo. Lavado en seco o a mano para conservar su estructura.',
+pantalon:'Algodón stretch que se estira contigo y recupera su forma, con tiro y cintura cómodos para tallas grandes. Se lava a máquina y se plancha a temperatura media.',
+falda:'Tela fluida de caída ligera, cómoda en la cintura y fácil de combinar. Se lava en frío.',
+short:'Poliéster de secado rápido, ligero y cómodo para entrenar o para el uso casual. Se lava a máquina en frío.',
+deportivo:'Mezcla de algodón y poliéster: suave, abrigada y resistente al uso diario y al entrenamiento. Se lava a máquina en frío.',
+accesorio:'Poliéster resistente y liviano, pensado para el uso diario. Se limpia con un paño húmedo.'};
+function calidadDe(c){return CALIDAD[c.k]||CALIDAD.top}
 function priceLabel(c){return Number(c.pr)>0?'S/ '+Number(c.pr).toFixed(2):'Precio por confirmar'}
 function card(c){var r=S.body&&c.b.indexOf(S.body)>-1;return'<div class="pc" data-id="'+c.id+'"><div class="im" style="background:'+c.tint+'" data-ficha="'+c.id+'" tabindex="0" role="link" aria-label="Ver '+c.n+'">'+(c.bd?'<span class="bd">'+c.bd+'</span>':'')+(c.nuevo?'<span class="bd bnew">Nuevo</span>':'')+(r?'<span class="bd b2">Para tu silueta</span>':'')+'<button class="hrt'+(FAV.indexOf(c.id)>-1?' on':'')+'" data-fav="'+c.id+'" aria-label="Guardar en favoritos">♥</button>'+pic(c.id,mini(c.k,c.c[0]))+pic2(c)+'<span class="fx-tn"></span><div class="qa"><button class="btn sm" data-add="'+c.id+'" aria-label="Añadir '+c.n+' a la bolsa">Añadir</button><button class="btn o sm" style="background:var(--bg)" data-pr="'+c.id+'" aria-label="Probar '+c.n+'">Probar</button></div></div><h3>'+c.n+'</h3><p class="price"><strong>'+priceLabel(c)+'</strong>'+(c.old?'<s>S/ '+c.old+'.00</s><small class="sale-note">Ahorras S/ '+(c.old-c.pr)+'.00</small>':'')+'</p><div class="dots">'+c.c.map(function(x){return'<button type="button" class="dot" data-dc="'+x+'" aria-label="Color '+x+'" style="background:'+(COL[x]||'#999')+'"></button>'}).join('')+(c.c.length?'':'<span class="cn">Colores por confirmar</span>')+'</div></div>'}
 var PG={
