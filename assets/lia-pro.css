@@ -1,0 +1,8 @@
+.lia5-launch{display:none!important}
+.lia5-log{max-height:none!important;height:clamp(240px,40vh,380px)!important;overflow-y:auto}
+.lia5-photo{display:none!important}
+.lia5-filtros{margin:10px 0;border:1px solid #d5dbe6;border-radius:10px;background:#f7f9fc}
+.lia5-filtros>summary{cursor:pointer;padding:10px 12px;font-weight:700;font-size:13px;color:#14243a;list-style:none}
+.lia5-filtros>summary::-webkit-details-marker{display:none}
+.lia5-filtros[open]>summary{border-bottom:1px solid #d5dbe6}
+.lia5-filtros .lia5-controls{padding:10px}
