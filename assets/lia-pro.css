@@ -6,3 +6,6 @@
 .lia5-filtros>summary::-webkit-details-marker{display:none}
 .lia5-filtros[open]>summary{border-bottom:1px solid #d5dbe6}
 .lia5-filtros .lia5-controls{padding:10px}
+.lia5-atajos{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.lia5-atajos button{border:1px solid #14243a;background:#fff;color:#14243a;border-radius:999px;padding:7px 12px;font:600 12px sans-serif;cursor:pointer}
+.lia5-atajos button:hover{background:#14243a;color:#fff}
