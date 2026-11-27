@@ -500,7 +500,7 @@ var DEMO_MODE=window.SMARTFIT_LIA_CONFIG.MODO_DEMO, selectedPhotoUrl='', lastRes
  }
  function reason(c,f){
    var a=[];
-   if(f.style)a.push('su estilo '+f.style);
+   if(f.named)a.push('es la prenda que pediste');if(f.style)a.push('su estilo '+f.style);
    if(f.color)a.push('el color '+f.color);
    if(f.avoidColor)a.push('evita el color '+f.avoidColor);
    if(f.size)a.push('tiene stock confirmado en talla '+f.size);
@@ -512,6 +512,8 @@ var DEMO_MODE=window.SMARTFIT_LIA_CONFIG.MODO_DEMO, selectedPhotoUrl='', lastRes
    var sz=getAvailableSize(c,f.size),stock=sz?stockOf(c,sz):0,photo=IMG[c.id]||'';
    return '<article class="lia5-product"><div class="lia5-product-img">'+(photo?'<img src="'+esc(photo)+'" alt="'+esc(c.n)+'" loading="lazy" onerror="this.style.display=\'none\'">':'<span>Imagen no disponible</span>')+'</div><div class="lia5-product-info"><b>'+esc(c.n)+'</b><small>'+esc(KN[c.k]||c.k)+' · '+esc(c.e||'Estilo por confirmar')+'</small><strong>'+(Number(c.pr)>0?'S/ '+Number(c.pr).toFixed(2):'Precio por confirmar')+'</strong><small>'+(sz?'Talla '+esc(sz)+' · '+stock+' disponible(s)':'Stock por talla pendiente de confirmar')+'</small><p>'+esc(reason(c,f))+'</p><div class="lia5-actions"><a href="#producto/'+encodeURIComponent(c.id)+'" data-lia5-view="'+esc(c.id)+'">Ver producto</a><button type="button" data-lia5-add="'+esc(c.id)+'" '+(!sz?'disabled title="No hay stock verificable"':'')+'>Añadir al carrito</button></div></div></article>';
  }
+ function stem(t){return norm(t).replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(Boolean).map(function(w){return w.length>3?w.replace(/s$/,''):w}).join(' ')}
+ function namedProducts(q){var sq=' '+stem(q)+' ';return CAT.filter(function(c){var w=stem(c.n).split(' ').filter(function(x){return x.length>2&&['con','sin','del'].indexOf(x)<0});return w.length>1&&w.every(function(x){return sq.indexOf(' '+x+' ')>-1})})}
  function recommend(q,ui){
    var gender=genderFor(q,ui.gender.value),style=styleFor(q)||ui.style.value,color=colorFor(q)||norm(ui.color.value),budget=Number(ui.budget.value)||0,size=ui.size.value;
    var cat='',nq=norm(q);
@@ -519,7 +521,8 @@ var DEMO_MODE=window.SMARTFIT_LIA_CONFIG.MODO_DEMO, selectedPhotoUrl='', lastRes
    var avoid=norm(ui.avoid.value)||(/no quiero|evita|sin /.test(nq)?colorFor(q):'');
    if(avoid&&avoid===color)color='';
    var f={gender:gender,style:style,color:color,avoidColor:avoid,budget:budget,size:size,category:cat};
-   var list=CAT.filter(function(c){return productMatches(c,f)});
+   var named=namedProducts(q);var byG=named.filter(function(c){return c.gender===gender});if(byG.length)named=byG;f.named=named.length>0;
+   var list=named.length?named.filter(function(c){return productMatches(c,Object.assign({},f,{gender:c.gender,category:'',style:''}))}):CAT.filter(function(c){return productMatches(c,f)});
    list.sort(function(a,b){
      var an=norm(a.n+' '+a.e+' '+a.description),bn=norm(b.n+' '+b.e+' '+b.description);
      var scoreA=(style&&an.indexOf(style)>-1?3:0)+(color&&(a.c||[]).some(function(x){return norm(x)===color})?2:0)+(a.nuevo?1:0);
