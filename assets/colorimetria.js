@@ -4,7 +4,7 @@
   var VER = '0.10.14';
   var BASE = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@' + VER;
   var MODELO = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
-  var landmarker = null, fotoUrl = '';
+    var landmarker = null, fotoUrl = '', generoSel = 'mujer';
 
   var PALETAS = {
     'cálido': [['Terracota', '#C0583A'], ['Mostaza', '#D4A017'], ['Verde oliva', '#6B7A2F'], ['Camel', '#C19A6B'], ['Coral', '#E9785D'], ['Crema', '#F2E6CF']],
@@ -80,8 +80,10 @@
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   var p = document.createElement('div'); p.id = 'col-p';
-  p.innerHTML = '<div id="col-w" role="dialog" aria-modal="true"><div style="display:flex;justify-content:space-between"><h2>🎨 Colorimetría</h2><button class="col-b" id="col-x" type="button">Cerrar</button></div>' +
+   p.innerHTML = '<div id="col-w" role="dialog" aria-modal="true"><div style="display:flex;justify-content:space-between"><h2>🎨 Colorimetría</h2><button class="col-b" id="col-x" type="button">Cerrar</button></div>' +
     '<p class="col-fine">Sube una foto de tu rostro con <b>luz natural</b>, sin filtros ni maquillaje fuerte. La foto se analiza solo en tu navegador: no se sube ni se guarda. El resultado es <b>aproximado</b> (la luz cambia el color).</p>' +
+    '<p class="col-fine"><b>¿Para qué sección buscas ropa?</b> (esto lo eliges tú, no se detecta de la foto)</p>' +
+    '<div style="margin-bottom:10px"><button type="button" class="col-b" id="col-g-mujer">♀ Mujer</button> <button type="button" class="col-b" id="col-g-hombre" style="background:#ccc;color:#111">♂ Hombre</button></div>' +
     '<label class="col-b" for="col-f">📷 Elegir o tomar foto</label><input id="col-f" type="file" accept="image/jpeg,image/png,image/webp" capture="user" style="display:none">' +
     '<p id="col-s" role="status"></p><div id="col-i"></div><div id="col-r"></div></div>';
   document.body.appendChild(p);
@@ -95,8 +97,18 @@
     $('col-i').innerHTML = ''; $('col-r').innerHTML = ''; estado('');
     if (location.hash === '#colorimetria') location.hash = '#inicio';
   }
-  $('col-x').onclick = cerrar;
+    $('col-x').onclick = cerrar;
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') cerrar(); });
+  function marcarGenero(g) {
+    generoSel = g;
+    $('col-g-mujer').style.background = g === 'mujer' ? '#07162e' : '#ccc';
+    $('col-g-mujer').style.color = g === 'mujer' ? '#fff' : '#111';
+    $('col-g-hombre').style.background = g === 'hombre' ? '#07162e' : '#ccc';
+    $('col-g-hombre').style.color = g === 'hombre' ? '#fff' : '#111';
+  }
+  marcarGenero('mujer');
+  $('col-g-mujer').onclick = function () { marcarGenero('mujer'); };
+  $('col-g-hombre').onclick = function () { marcarGenero('hombre'); };
 
   function mostrar(res, rgb) {
     var r = $('col-r'); r.innerHTML = '';
@@ -110,7 +122,7 @@
     });
     var t2 = document.createElement('p'); t2.textContent = 'Prendas de la tienda en esos tonos:'; r.appendChild(t2);
     var g = document.createElement('div'); g.className = 'col-g';
-    recomendar(res.sub).forEach(function (x) {
+        recomendar(res.sub, generoSel).forEach(function (x) {
       var a = document.createElement('a'); a.className = 'col-c'; a.href = '#producto/' + encodeURIComponent(x.c.id);
       a.onclick = function () { cerrar(); };
       var f = (window.IMG || {})[x.c.id + '_' + x.color] || (window.IMG || {})[x.c.id];
