@@ -1,27 +1,118 @@
-<!DOCTYPE html>
-<html lang="es"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Moda inclusiva para tallas grandes en Cusco: prendas cómodas para cuerpos reales, tallas L a 5XL, ofertas de temporada y asistente de tallas.">
-<meta property="og:title" content="Smart Fit Cusco — Moda inclusiva con asistente de tallas"><meta property="og:description" content="Calcula tu talla exacta y encuentra prendas que te favorecen."><meta property="og:type" content="website"><meta property="og:site_name" content="Smart Fit Cusco"><meta property="og:locale" content="es_PE"><meta property="og:image" content="assets/img/og.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#07162e">
-<title>Smart Fit Cusco — Moda inclusiva con asistente de tallas</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 fill=%27%2307162e%27/%3E%3Ctext x=%2716%27 y=%2722%27 font-size=%2718%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27Georgia%27%3ES%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="assets/style.css"><link rel="stylesheet" href="assets/probador-virtual.css"><link rel="stylesheet" href="assets/demo-pedidos.css"></head><body>
-<a class="fx-skip" href="#" onclick="document.getElementById('view').focus();return false">Saltar al contenido</a>
-<div class="bar">OFERTAS SMART FIT: 5% extra en tu 2.ª prenda · 10% extra desde la 3.ª · Envío gratis desde S/ 129.90</div>
-<header><div class="w"><div class="top"><button class="burger" id="bg" aria-label="Menú">☰</button><a class="logo" href="#inicio">Smart Fit<small>CUSCO</small></a><div class="ic"><a id="ordb" href="#pedidos" aria-label="Mis pedidos"><span class="ot">Mis pedidos</span><span class="oi">📦</span><b id="ordc" hidden>0</b></a><button id="cartb" class="up">Carrito (<span id="cc">0</span>)</button></div></div>
-<nav class="m" id="nv"><a href="#inicio" data-p="inicio">Inicio</a><a href="#tienda" data-p="tienda">Tienda</a><a href="#asistente" data-p="asistente" class="hl">Asistente de tallas</a><a href="#blog" data-p="blog">Guías de estilo</a><a href="#nosotros" data-p="nosotros">Nosotros</a><a href="#opinion" data-p="opinion">Tu opinión</a><a href="#contacto" data-p="contacto">Contacto</a><a href="#pedidos" data-p="pedidos">Mis pedidos</a></nav></div></header>
-<main id="view" tabindex="-1"></main>
-<footer><div class="w"><div class="fc"><div><div class="logo" style="text-align:left;font-size:20px">Smart Fit<small style="margin:0">CUSCO</small></div><p style="color:var(--mut)">Ropa para cuerpos reales y tallas grandes en Cusco, con ofertas y asistente de tallas.</p></div>
-<div><h4>Tienda</h4><a href="#tienda/vestido">Vestidos</a><a href="#tienda/top">Tops</a><a href="#tienda/casaca">Casacas</a><a href="#tienda/pantalon">Pantalones</a></div>
-<div><h4>Empresa</h4><a href="#asistente">Asistente de tallas</a><a href="#pedidos">Mis pedidos</a><a href="#seguimiento">Seguimiento de pedidos</a><a href="#pago">Pagar mi pedido</a><a href="#blog">Guías de estilo</a><a href="#nosotros">Nosotros</a><a href="#opinion">Tu opinión</a><a href="#contacto">Contacto</a></div>
-<div><h4>Newsletter</h4><p style="color:var(--mut);margin:0 0 10px">Recibe lanzamientos y beneficios.</p><div class="nl"><input id="em" type="email" placeholder="Correo electrónico"><button class="btn" id="sub">Suscribirme</button></div></div></div>
-<div class="cp"><span>© 2026 Smart Fit Cusco · Proyecto de validación</span><span>Promociones sujetas a disponibilidad · <button type="button" class="linkb" data-reset="1">Restablecer demo</button></span></div><div class="pay-row"><span>Pago con Yape (adelanto 50%)</span><span>Recojo en tienda · Cusco</span><span>Cambio de talla sin costo</span><span>Atención por WhatsApp</span></div></div></footer>
-<button id="floatcart" type="button" aria-label="Abrir carrito de compras">🛍️ <span>Carrito</span> <b id="fcc">0</b></button><div id="lia"></div>
-<div id="drw"><aside><div class="hd"><div><p class="eyebrow" style="margin:0">SMART FIT CUSCO</p><h3 style="margin:0">Tu carrito</h3></div><button class="chip" id="cl">Cerrar</button></div><div class="dtabs"><button type="button" data-dt="c" class="on">Carrito</button><button type="button" data-dt="o">Mis pedidos <b id="dtc" hidden>0</b></button></div><div id="cart"></div></aside></div><div id="toast"></div>
+(function () {
+  if (window.__asistenteIA) return;
+  window.__asistenteIA = true;
 
-<script src="assets/config.js"></script>
-<script src="assets/demo-pedidos.js"></script>
-<script src="assets/app.js"></script>
-<script src="assets/efectos.js"></script>
-<script src="assets/probador-config.js"></script>
-<script src="assets/probador-virtual.js"></script></body></html>
+  var WORKER_URL = 'https://mi-tienda-ia.61239578.workers.dev/';
+  var MAX = 500;
+
+  var css = '' +
+    '#aia-btn{position:fixed;left:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9998;background:#07162e;color:#fff;border:0;border-radius:24px;padding:12px 16px;font:600 14px sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.3)}' +
+    '#aia-panel{position:fixed;left:16px;bottom:calc(136px + env(safe-area-inset-bottom,0px));z-index:9999;width:min(360px,calc(100vw - 32px));height:min(420px,60vh);background:#fff;color:#111;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.35);display:none;flex-direction:column;overflow:hidden;font:14px sans-serif}' +
+    '#aia-panel.open{display:flex}' +
+    '#aia-head{background:#07162e;color:#fff;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;font-weight:600}' +
+    '#aia-close{background:none;border:0;color:#fff;font-size:18px;cursor:pointer}' +
+    '#aia-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:#f4f5f7}' +
+    '.aia-m{max-width:85%;padding:8px 12px;border-radius:12px;line-height:1.4;white-space:pre-wrap;word-wrap:break-word}' +
+    '.aia-bot{background:#fff;align-self:flex-start;border:1px solid #e1e3e8}' +
+    '.aia-user{background:#07162e;color:#fff;align-self:flex-end}' +
+    '#aia-form{display:flex;gap:6px;padding:10px;border-top:1px solid #e1e3e8;background:#fff}' +
+    '#aia-input{flex:1;border:1px solid #c9ccd3;border-radius:8px;padding:9px;font:14px sans-serif}' +
+    '#aia-send{background:#07162e;color:#fff;border:0;border-radius:8px;padding:0 14px;cursor:pointer;font-weight:600}' +
+    '#aia-send:disabled{opacity:.5;cursor:default}';
+
+  var style = document.createElement('style');
+  style.textContent = css;
+  document.head.appendChild(style);
+
+  var btn = document.createElement('button');
+  btn.id = 'aia-btn';
+  btn.type = 'button';
+  btn.textContent = '💬 Asistente IA';
+
+  var panel = document.createElement('div');
+  panel.id = 'aia-panel';
+
+  var head = document.createElement('div');
+  head.id = 'aia-head';
+  var title = document.createElement('span');
+  title.textContent = 'Asistente Smart Fit';
+  var close = document.createElement('button');
+  close.id = 'aia-close';
+  close.type = 'button';
+  close.setAttribute('aria-label', 'Cerrar');
+  close.textContent = '✕';
+  head.appendChild(title);
+  head.appendChild(close);
+
+  var msgs = document.createElement('div');
+  msgs.id = 'aia-msgs';
+
+  var form = document.createElement('div');
+  form.id = 'aia-form';
+  var input = document.createElement('input');
+  input.id = 'aia-input';
+  input.type = 'text';
+  input.maxLength = MAX;
+  input.placeholder = 'Escribe tu pregunta...';
+  var send = document.createElement('button');
+  send.id = 'aia-send';
+  send.type = 'button';
+  send.textContent = 'Enviar';
+  form.appendChild(input);
+  form.appendChild(send);
+
+  panel.appendChild(head);
+  panel.appendChild(msgs);
+  panel.appendChild(form);
+  document.body.appendChild(btn);
+  document.body.appendChild(panel);
+
+  function addMsg(text, who) {
+    var d = document.createElement('div');
+    d.className = 'aia-m ' + (who === 'user' ? 'aia-user' : 'aia-bot');
+    d.textContent = text; // textContent evita XSS
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+    return d;
+  }
+
+  addMsg('¡Hola! Soy el asistente de Smart Fit Cusco. Pregúntame por tallas, prendas, envíos o pagos. (No compartas datos personales.)', 'bot');
+
+  var busy = false;
+  async function enviar() {
+    var texto = input.value.trim();
+    if (!texto || busy) return;
+    busy = true;
+    send.disabled = true;
+    input.value = '';
+    addMsg(texto, 'user');
+    var espera = addMsg('Escribiendo...', 'bot');
+    var ctrl = new AbortController();
+    var t = setTimeout(function () { ctrl.abort(); }, 20000);
+    try {
+      var r = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mensaje: texto.slice(0, MAX) }),
+        signal: ctrl.signal
+      });
+      var data = await r.json();
+      espera.textContent = data.respuesta || 'No pude responder ahora. Escríbenos por WhatsApp.';
+    } catch (e) {
+      espera.textContent = 'No pude conectarme en este momento. Por favor escríbenos por WhatsApp.';
+    } finally {
+      clearTimeout(t);
+      busy = false;
+      send.disabled = false;
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+  }
+
+  btn.addEventListener('click', function () {
+    panel.classList.toggle('open');
+    if (panel.classList.contains('open')) input.focus();
+  });
+  close.addEventListener('click', function () { panel.classList.remove('open'); });
+  send.addEventListener('click', enviar);
+  input.addEventListener('keydown', function (e) { if (e.key === 'Enter') enviar(); });
+})();
