@@ -459,7 +459,8 @@ try{
  'use strict';
  window.SMARTFIT_LIA_CONFIG=window.SMARTFIT_LIA_CONFIG||{MODO_DEMO:true,PROVEEDOR_IA:null};
  window.SMARTFIT_LIA_CONFIG.MODO_DEMO=true;
- var DEMO_MODE=window.SMARTFIT_LIA_CONFIG.MODO_DEMO, selectedPhotoUrl='', lastResults=[];
+var DEMO_MODE=window.SMARTFIT_LIA_CONFIG.MODO_DEMO, selectedPhotoUrl='', lastResults=[];
+ var LIA_WORKER_URL='https://mi-tienda-ia.61239578.workers.dev/';
  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])})}
  function norm(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
  function getAvailableSize(c,preferred){
@@ -533,7 +534,7 @@ try{
    var input=document.getElementById('lia5-question');if(input)input.focus();
  }
  function close(){var p=document.getElementById('lia5-panel');if(p){p.classList.remove('on');p.setAttribute('aria-hidden','true')}if(selectedPhotoUrl){URL.revokeObjectURL(selectedPhotoUrl);selectedPhotoUrl='';var preview=document.getElementById('lia5-photo-preview'),file=document.getElementById('lia5-photo-input');if(preview)preview.innerHTML='';if(file)file.value=''}}
- function message(text,kind){var log=document.getElementById('lia5-log');if(!log)return;var el=document.createElement('div');el.className='lia5-msg '+(kind||'bot');el.textContent=text;log.appendChild(el);log.scrollTop=log.scrollHeight}
+function message(text,kind){var log=document.getElementById('lia5-log');if(!log)return;var el=document.createElement('div');el.className='lia5-msg '+(kind||'bot');el.textContent=text;log.appendChild(el);log.scrollTop=log.scrollHeight;return el}
  function renderResults(q){
    var ui={gender:document.getElementById('lia5-gender'),style:document.getElementById('lia5-style'),color:document.getElementById('lia5-color'),budget:document.getElementById('lia5-budget'),size:document.getElementById('lia5-size'),avoid:document.getElementById('lia5-avoid')};
    var r=recommend(q,ui);lastResults=r.products;
@@ -566,14 +567,20 @@ try{
    document.getElementById('lia5-results').innerHTML=html;lastResults=pair;
    message('Te propongo una combinación de '+pair[0].n+' con '+pair[1].n+'. Puedes agregarlas juntas o por separado.','bot');
  }
- function send(q){
+ async function send(q){
    q=String(q||'').trim();if(!q)return;
    message(q,'user');var ui={gender:document.getElementById('lia5-gender'),style:document.getElementById('lia5-style'),color:document.getElementById('lia5-color'),budget:document.getElementById('lia5-budget'),size:document.getElementById('lia5-size'),avoid:document.getElementById('lia5-avoid')};
    var nq=norm(q);
    if(/foto|fotografia|imagen/.test(nq)){message('En esta versión puedo mostrar una vista previa local de tu imagen, pero no analizo visualmente cuerpos ni envío la fotografía a servidores. Describe qué prenda o estilo buscas y te recomendaré productos del catálogo.','bot');return}
    if(/color.*combina|combina.*color/.test(nq)){message('Como orientación general de estilo, el negro combina fácilmente con blanco, crema, gris, azul y tonos tierra. Si quieres, puedo buscar prendas de esos colores que tengan stock registrado.','bot');}
    if(/outfit|conjunto|combina|look/.test(nq)){outfit(q);return}
-   if(/hola|buenas|ayuda|que puedes/.test(nq)){message('¡Hola! Soy LÍA, asesora de moda en modo DEMO. Puedo buscar prendas reales, filtrar por sección, color, presupuesto y talla, y proponer outfits cuando existan productos compatibles con stock confirmado.','bot');return}
+   var pensando=message('Pensando...','bot');
+   try{
+     var ctrl=new AbortController();var tmr=setTimeout(function(){ctrl.abort()},20000);
+     var r=await fetch(LIA_WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mensaje:q.slice(0,500)}),signal:ctrl.signal});
+     var data=await r.json();clearTimeout(tmr);
+     if(pensando)pensando.textContent=data.respuesta||'No pude responder ahora. Te muestro igual algunas prendas del catálogo.';
+   }catch(e){if(pensando)pensando.textContent='No pude conectarme con el asistente de IA en este momento. Te muestro algunas prendas del catálogo.'}
    renderResults(q);
  }
  function addProduct(id,from){
