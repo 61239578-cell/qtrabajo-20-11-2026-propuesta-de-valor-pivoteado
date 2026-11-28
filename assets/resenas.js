@@ -136,5 +136,7 @@
       var t = box.querySelector('#sfr-t'); if (t && talla) t.value = talla;
       var n = box.querySelector('#sfr-n'); if (n && nombre) n.value = nombre;
     },
-  window.Resenas = { abrir: function () { b.click(); }, vid: vid };
+    abrir: function () { b.click(); },
+    vid: vid
+  };
 })();
