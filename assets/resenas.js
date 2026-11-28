@@ -74,4 +74,60 @@
     var n = 0, fotos = [];
     var ops = '<option value="">General (la tienda)</option>' + cat().map(function (c) { return '<option value="' + esc(c.id) + '">' + esc(c.n) + '</option>'; }).join('');
     var tl = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'].map(function (t) { return '<option>' + t + '</option>'; }).join('');
-    el.innerHTML = '<label>Prenda</label><select id="sfr-p">'
+    el.innerHTML = '<label>Prenda</label><select id="sfr-p">' + ops + '</select><label>Talla que compraste</label><select id="sfr-t"><option value="">—</option>' + tl + '</select>' +
+      '<label>Tu calificación</label><div class="sfr-st" id="sfr-s">' + [1, 2, 3, 4, 5].map(function (i) { return '<button type="button" data-n="' + i + '" aria-label="' + i + ' estrellas">★</button>'; }).join('') + '</div>' +
+      '<label>Tu reseña (mín. 10 caracteres)</label><textarea id="sfr-c2" rows="4" maxlength="600"></textarea>' +
+      '<label>Tu nombre (opcional)</label><input id="sfr-n" maxlength="60">' +
+      '<label>¿Recomiendas esta página?</label><select id="sfr-r"><option value="">—</option><option value="si">Sí, la recomiendo</option><option value="no">No</option></select>' +
+      '<label>Fotos (hasta 3, opcional)</label><input type="file" id="sfr-f" accept="image/*" multiple><div class="sfr-ph" id="sfr-pv"></div>' +
+      '<p style="font-size:12px;color:#666">Tu reseña y fotos se publican después de ser revisadas. No subas fotos de menores. Al enviar, ganas un 5% de descuento en tu próxima compra.</p>' +
+      '<button type="button" class="sfr-go" id="sfr-go">Enviar reseña</button><div id="sfr-msg" role="status"></div>';
+    [].forEach.call(el.querySelectorAll('#sfr-s button'), function (x) {
+      x.onclick = function () { n = +x.getAttribute('data-n'); [].forEach.call(el.querySelectorAll('#sfr-s button'), function (y) { y.classList.toggle('on', +y.getAttribute('data-n') <= n); }); };
+    });
+    el.querySelector('#sfr-f').onchange = function (e) {
+      var fs = [].slice.call(e.target.files, 0, 3); fotos = []; el.querySelector('#sfr-pv').innerHTML = '';
+      fs.forEach(function (f) { comprimir(f).then(function (d) { fotos.push(d); el.querySelector('#sfr-pv').insertAdjacentHTML('beforeend', '<img alt="Vista previa" src="' + d + '">'); }); });
+    };
+    el.querySelector('#sfr-go').onclick = function () {
+      var msg = el.querySelector('#sfr-msg'), com = el.querySelector('#sfr-c2').value.trim();
+      if (!n) { msg.textContent = 'Marca tus estrellas.'; return; }
+      if (com.length < 10) { msg.textContent = 'Escribe al menos 10 caracteres.'; return; }
+      var id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8), go = el.querySelector('#sfr-go');
+      go.disabled = true; msg.textContent = 'Enviando…';
+      post({ tipo: 'resena', resena_id: id, prenda_id: el.querySelector('#sfr-p').value, talla: el.querySelector('#sfr-t').value, estrellas: n, comentario: com, nombre: el.querySelector('#sfr-n').value, recomienda: el.querySelector('#sfr-r').value, fotos: fotos });
+      var intentos = 0;
+      (function pedir() {
+        intentos++;
+        jsonp('mi_cupon=' + id, function (r) {
+          if (r && r.ok) {
+            msg.innerHTML = '<div class="sfr-ok">¡Gracias! Tu reseña será publicada tras revisión.' + (r.cupon ? '<br>Tu cupón de <b>' + r.descuento + '%</b> para tu próxima compra: <b>' + esc(r.cupon) + '</b> (guárdalo, vence en 60 días).' : '<br>Ya habías recibido tu cupón por reseña.') + '</div>';
+            imp('resena_enviada'); return;
+          }
+          if (intentos < 4) setTimeout(pedir, 2500); else { msg.textContent = 'Se envió, pero no pudimos confirmarlo. Revisa en unos minutos.'; go.disabled = false; }
+        });
+      })();
+    };
+  }
+
+  /* ---- Cupón por pagar el adelanto del 50% (se muestra en #gracias) ---- */
+  function cuponPago() {
+    if (location.hash !== '#gracias') return;
+    var o = null; try { o = JSON.parse(sessionStorage.getItem('sfc_ultimo_pedido') || 'null'); } catch (e) {}
+    if (!o || String(o.canal || '').indexOf('Yape') !== 0 || !o.codigo_seguimiento) return;
+    var n = 0;
+    (function pedir() {
+      n++;
+      jsonp('cupon_pago=' + encodeURIComponent(o.codigo_seguimiento) + '&telefono4=' + String(o.telefono || '').slice(-4), function (r) {
+        if (r && r.ok && r.cupon) {
+          var sec = document.querySelector('section.pg');
+          if (sec && !document.getElementById('sfr-cp')) sec.insertAdjacentHTML('beforeend', '<div id="sfr-cp" class="sfr-ok" style="margin-top:16px">Por pagar tu adelanto del 50% tienes un cupón de <b>5%</b> para tu próxima compra: <b>' + esc(r.cupon) + '</b> (vence en 60 días).</div>');
+        } else if (n < 4) setTimeout(pedir, 3000);
+      });
+    })();
+  }
+  window.addEventListener('hashchange', function () { setTimeout(cuponPago, 800); });
+  setTimeout(cuponPago, 800);
+
+  window.Resenas = { abrir: function () { b.click(); }, vid: vid };
+})();
