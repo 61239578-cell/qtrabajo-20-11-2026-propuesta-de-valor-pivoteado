@@ -201,11 +201,11 @@
     '<div class="pv6-wrap" role="document">' +
       '<div class="pv6-head"><div><span class="pv6-eyebrow">SMART FIT CUSCO · PASO 6</span><h2 id="pv6-title">Probador virtual</h2></div>' +
         '<div class="pv6-head-r"><span class="pv6-demo" title="Sin IA real ni envío de datos">MODO DEMO</span><button type="button" class="pv6-x" id="pv6-close" aria-label="Cerrar probador">×</button></div></div>' +
-      '<div class="pv6-alert" role="note"><b>' + esc(MotorDemo.etiqueta) + '</b> Tu fotografía se queda solo en este navegador: no se sube, no se envía a ningún servidor y se borra al quitarla o al cerrar el probador.</div>' +
+      '<div class="pv6-alert" role="note"><b>' + esc(MotorDemo.etiqueta) + '</b> Tu fotografía se queda solo en este navegador, salvo que marques la casilla de IA: en ese caso se envía a Hugging Face solo para generar la simulación. Se borra al quitarla o al cerrar el probador.</div>' +
       '<div class="pv6-main">' +
-        '<section class="pv6-stage" aria-label="Zona de prueba">' +
+        '<section class="pv6-stage" aria-label="Zona de prueba">' +   
           '<div class="pv6-photobar">' +
-            '<label class="pv6-btn" for="pv6-file" id="pv6-file-lbl">📷 <span id="pv6-file-txt">Seleccionar fotografía</span></label>' +
+            '<label class="pv6-btn" for="pv6-file" id="pv6-file-lbl">📷 <span id="pv6-file-txt">Seleccionar fotografía</span></label>' +   
             '<input type="file" id="pv6-file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" class="pv6-file">' +
             '<button type="button" class="pv6-btn pv6-ghost" id="pv6-del" hidden>Eliminar foto</button>' +
           '</div>' +
@@ -215,7 +215,8 @@
             '<figure class="pv6-pane"><figcaption>Prenda seleccionada</figcaption><div class="pv6-box" id="pv6-garment"><span class="pv6-empty">Elige una prenda de la lista.</span></div></figure>' +
             '<figure class="pv6-pane pv6-pane-wide"><figcaption>Vista de demostración <em>(simulación)</em></figcaption><div class="pv6-box pv6-box-demo" id="pv6-demo"><span class="pv6-empty">Elige foto y prenda para ver la demostración.</span></div></figure>' +
           '</div>' +
-          '<div class="pv6-mont" id="pv6-mont" hidden>' +
+          '<div class="pv6-ia" id="pv6-ia" hidden style="margin:12px 0;padding:12px;border:1px dashed #9aaabd;border-radius:10px"><label class="pv6-check"><input type="checkbox" id="pv6-ia-ok"> Acepto enviar mi foto y la imagen de la prenda a Hugging Face (servicio externo) solo para generar esta simulación.</label><button type="button" class="pv6-cta" id="pv6-ia-go" disabled style="margin-top:8px">✨ Simular con IA (gratis)</button><p class="pv6-hint" id="pv6-ia-msg" role="status" aria-live="polite">Puede tardar de 30 a 90 segundos y a veces no está disponible. Uso no comercial.</p><div id="pv6-ia-out"></div></div>' +
+    '<div class="pv6-mont" id="pv6-mont" hidden>' +
             '<label class="pv6-check"><input type="checkbox" id="pv6-mont-on"> Mostrar montaje ilustrativo sobre mi foto</label>' +
             '<div class="pv6-sliders" id="pv6-sliders" hidden><label>Tamaño<input type="range" id="pv6-sc" min="25" max="90" value="55"></label><label>Posición vertical<input type="range" id="pv6-py" min="0" max="80" value="30"></label><label>Posición horizontal<input type="range" id="pv6-px" min="0" max="100" value="50"></label></div>' +
           '</div>' +
@@ -253,6 +254,8 @@
     $1('#pv6-close').onclick = cerrar;
     $1('#pv6-file').onchange = function () { elegirFoto(this); };
     $1('#pv6-del').onclick = quitarFoto;
+    $1('#pv6-ia-ok').onchange = function () { $1('#pv6-ia-go').disabled = !this.checked; };
+    $1('#pv6-ia-go').onclick = simularIA;
     $1('#pv6-f-g').onchange = function () { ST.genero = this.value; ST.categoria = ''; ST.color = ''; pintarFiltros(); pintarGrid(); };
     $1('#pv6-f-k').onchange = function () { ST.categoria = this.value; pintarGrid(); };
     $1('#pv6-f-c').onchange = function () { ST.color = this.value; pintarGrid(); };
@@ -381,7 +384,7 @@
 
   function pintarDemo() {
     var box = $1('#pv6-demo'), mont = $1('#pv6-mont'), c = Catalogo.porId(ST.id);
-    if (!box) return;
+    if (!box) return; var iaB = $1('#pv6-ia'); if (iaB) iaB.hidden = !(Fotos.url && c);
     if (!Fotos.url || !c) {
       mont.hidden = true;
       box.innerHTML = '<span class="pv6-empty">' + (!Fotos.url && !c ? 'Elige una fotografía y una prenda para ver la demostración.' : (!Fotos.url ? 'Falta tu fotografía.' : 'Falta elegir una prenda.')) + '</span>';
@@ -405,6 +408,26 @@
     o.style.width = ST.escala + '%'; o.style.top = ST.posY + '%'; o.style.left = ST.posX + '%';
   }
 
+  function simularIA() {
+    var c = Catalogo.porId(ST.id), m = $1('#pv6-ia-msg'), out = $1('#pv6-ia-out'), go = $1('#pv6-ia-go');
+    if (!window.HFVton) { m.textContent = 'El módulo de IA no está cargado.'; return; }
+    if (!Fotos.url || !c) { m.textContent = 'Elige tu foto y una prenda.'; return; }
+    var f = Catalogo.foto(c, ST.col);
+    if (!f) { m.textContent = 'Esta prenda no tiene imagen para la IA.'; return; }
+    go.disabled = true; out.innerHTML = '<span class="pv6-loading"><i class="pv6-spin"></i> Generando…</span>';
+    fetch(Fotos.url).then(function (r) { return r.blob(); }).then(function (b) {
+      return HFVton.simular(b, f, c.n, function (t) { m.textContent = t; });
+    }).then(function (u) {
+      if (!u) throw new Error('sin resultado');
+      out.innerHTML = '<img src="' + esc(u) + '" alt="Simulación con IA de ' + esc(c.n) + '" style="width:100%;border-radius:10px"><p class="pv6-cap">Simulación generada con IA (IDM-VTON). Es una referencia visual: no garantiza el ajuste real.</p>';
+      m.textContent = 'Listo.';
+      try { window.track('probador6_ia_ok', c.n); } catch (e) {}
+    }).catch(function (e) {
+      out.innerHTML = '';
+      m.textContent = 'La IA gratuita no respondió (cola llena, cuota agotada o servicio caído). Inténtalo en unos minutos; mientras tanto puedes usar el montaje ilustrativo.';
+      console.warn('HFVton', e);
+    }).then(function () { go.disabled = !$1('#pv6-ia-ok').checked; });
+  }
   function abrir(o) {
     o = o || {}; build(); DatosDemo.aplicar(window.CAT);
     var p = $1('#pv6-panel'); p.classList.add('on'); p.setAttribute('aria-hidden', 'false'); document.documentElement.classList.add('pv6-lock'); ST.abierto = true;
@@ -423,7 +446,7 @@
   function cerrar() {
     var p = $1('#pv6-panel'); if (!p) return;
     p.classList.remove('on'); p.setAttribute('aria-hidden', 'true'); document.documentElement.classList.remove('pv6-lock'); ST.abierto = false;
-    Fotos.quitar(); ST.montaje = false; Resultados.limpiar();      /* se revoca la URL temporal y no queda rastro */
+    Fotos.quitar(); ST.montaje = false; Resultados.limpiar(); var iaO = $1('#pv6-ia-out'); if (iaO) iaO.innerHTML = ''; var iaK = $1('#pv6-ia-ok'); if (iaK) { iaK.checked = false; $1('#pv6-ia-go').disabled = true; }      /* se revoca la URL temporal y no queda rastro */
     var c = $1('#pv6-mont-on'); if (c) c.checked = false;
     pintarFoto(); pintarDemo(); pintarGrid(); msg('Formatos: JPG, JPEG, PNG o WEBP · máximo ' + CFGP.TAM_MAX_MB + ' MB. Usa solo fotos tuyas o con consentimiento de la persona.');
   }
