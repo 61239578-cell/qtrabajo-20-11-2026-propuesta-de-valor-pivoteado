@@ -34,3 +34,10 @@
 .hd2-ov p:not(.hd2-k),.hd2-row{max-height:none;opacity:1;overflow:visible;margin-top:10px}
 .hd2-a::after{content:"Desliza →";position:absolute;top:14px;right:14px;background:rgba(255,255,255,.92);color:#07162e;border-radius:999px;padding:5px 12px;font:700 12px sans-serif}
 }
+#view .hd2 .hd2-ov h1,#view .hd2 .hd2-ov h2{color:#fff!important;-webkit-text-fill-color:#fff!important;background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;mix-blend-mode:normal!important;filter:none!important;text-shadow:0 2px 18px rgba(0,0,0,.7)!important}
+#view .hd2 .hd2-ov p{color:#eef3fa!important;-webkit-text-fill-color:#eef3fa!important}
+#view .hd2 .hd2-ov .hd2-k{color:#e8c14a!important;-webkit-text-fill-color:#e8c14a!important}
+#view .hd2 .hd2-ov .hd2-slogan{color:#fff!important;-webkit-text-fill-color:#fff!important}
+#view .hd2 .hd2-ov .btn{color:#07162e!important;-webkit-text-fill-color:#07162e!important}
+#view .hd2 .hd2-ov .btn.o{color:#fff!important;-webkit-text-fill-color:#fff!important}
+#view .hd2 .hd2-ov{background:linear-gradient(to top,rgba(7,22,46,.97) 0%,rgba(7,22,46,.78) 38%,rgba(7,22,46,.12) 75%)!important}
