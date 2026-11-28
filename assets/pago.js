@@ -127,15 +127,6 @@
     s.src = (window.CONFIG || CFG).ENDPOINT + '?validar_cupon=' + encodeURIComponent(k) + '&callback=' + n;
     document.body.appendChild(s);
   }
-  function aplicarAntiguo() {
-  function aplicar() {
-    var k = String(F.codigo || '').trim().toUpperCase(), d = CODIGOS[k];
-    F.codigo = k;
-    if (!k) { F.cod = null; F.codmsg = ''; }
-    else if (d) { F.cod = { k: k, p: d.p, t: d.t }; F.codmsg = 'Código aplicado: ' + d.t + '.'; }
-    else { F.cod = null; F.codmsg = 'Ese código no es válido.'; }
-    pintar();
-  }
 
   function confirmar() {
     if (F.busy) return;
