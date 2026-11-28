@@ -1,7 +1,7 @@
 var $=function(s){return document.querySelector(s)};
 var CFG=window.CONFIG||{},IMG=CFG.IMAGENES||{};
 /* pic: foto con respaldo SVG. o.eager = carga prioritaria; o.cls = clase extra */
-function pic(k,fb,o){o=o||{};return fb+(IMG[k]?'<img class="ph'+(o.cls?' '+o.cls:'')+'" src="'+IMG[k]+'" alt="'+altOf(k)+'" '+(o.eager?'loading="eager" fetchpriority="high"':'loading="lazy"')+' decoding="async" onerror="this.remove()">':'')}
+function pic(k,fb,o){o=o||{};return fb+(IMG[k]?'<img class="ph'+(o.cls?' '+o.cls:'')+'" src="'+IMG[k]+'" alt="'+altOf(k)+'" '+(o.eager?'loading="eager" fetchpriority="high"':'loading="lazy"')+' decoding="async" onerror="if(this.dataset.r){this.remove()}else{this.dataset.r=1;this.src+=\'?r=1\'}">':'')}
 /* segunda foto de la tarjeta (v1_2) para el crossfade al pasar el mouse */
 function pic2(c){return IMG[c.id+'_2']?'<img class="ph ph2" src="'+IMG[c.id+'_2']+'" alt="" aria-hidden="true" loading="lazy" decoding="async" onerror="this.remove()">':''}
 /* fotos de una prenda: la del color elegido (v1_Terracota) primero, luego v1, v1_2, v1_3... */
