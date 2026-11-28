@@ -129,5 +129,12 @@
   window.addEventListener('hashchange', function () { setTimeout(cuponPago, 800); });
   setTimeout(cuponPago, 800);
 
+  window.Resenas = { jsonp: jsonp, esc: esc, stars: stars,
+    dejar: function (pid, nombre, talla) {
+      m.classList.add('on'); tab('dejar');
+      var p = box.querySelector('#sfr-p'); if (p && pid) p.value = pid;
+      var t = box.querySelector('#sfr-t'); if (t && talla) t.value = talla;
+      var n = box.querySelector('#sfr-n'); if (n && nombre) n.value = nombre;
+    },
   window.Resenas = { abrir: function () { b.click(); }, vid: vid };
 })();
