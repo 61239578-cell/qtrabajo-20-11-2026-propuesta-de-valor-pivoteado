@@ -15,20 +15,26 @@
 
   var st = document.createElement('style');
   st.textContent =
-    '.fin-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:24px;align-items:start}' +
-    '@media(max-width:820px){.fin-grid{grid-template-columns:1fr}}' +
-    '.fin-box{border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}' +
-    '.fin-box h3{margin:0 0 10px;font-size:16px}' +
-    '.fin-box .fl{display:block;margin:8px 0}' +
-    '.fin-op{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--line);border-radius:10px;padding:12px;margin:8px 0;cursor:pointer}' +
-    '.fin-op.on{border-color:var(--acc);background:var(--soft)}' +
-    '.fin-op input{width:auto;margin-top:3px}' +
-    '.fin-op b{display:block}.fin-op small{color:var(--mut);display:block;margin-top:2px}' +
-    '.fin-side{position:sticky;top:110px}' +
-    '.fin-row{display:flex;justify-content:space-between;gap:10px;margin:6px 0;font-size:14px}' +
-    '.fin-row.t{font-size:18px;font-weight:700;border-top:1px solid var(--line);padding-top:10px;margin-top:10px}' +
-    '.fin-ln{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:6px 0;border-bottom:1px solid var(--line)}' +
-    '.fin-cod{display:flex;gap:8px;margin-top:12px}.fin-cod input{flex:1;min-width:0}';
+    '.ck-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:24px;align-items:start}' +
+    '@media(max-width:820px){.ck-grid{grid-template-columns:1fr}}' +
+    '.ck-box{border:1px solid #c9d3e2;border-radius:12px;padding:16px;margin-bottom:16px;background:#fff}' +
+    '.ck-box,.ck-box *{color:#14243a!important;-webkit-text-fill-color:#14243a!important}' +
+    '.ck-box h3{margin:0 0 10px;font-size:16px}' +
+    '.ck-box .fl{display:block;margin:8px 0}' +
+    '.ck-box input[type=text],.ck-box input:not([type]),.ck-box input[inputmode]{background:#fff!important}' +
+    '.ck-op{display:flex;gap:10px;align-items:flex-start;border:1.5px solid #c9d3e2;border-radius:10px;padding:12px;margin:8px 0;cursor:pointer;background:#fff!important}' +
+    '.ck-op.sel{border-color:#1f4e8c;background:#e8f0fb!important;box-shadow:0 0 0 1px #1f4e8c inset}' +
+    '.ck-op input{width:auto;margin-top:3px;accent-color:#1f4e8c}' +
+    '.ck-op b{display:block}' +
+    '.ck-box .ck-op small{display:block;margin-top:2px;color:#4a5a70!important;-webkit-text-fill-color:#4a5a70!important;text-transform:none;letter-spacing:0}' +
+    '.ck-side{position:sticky;top:110px}' +
+    '.ck-row{display:flex;justify-content:space-between;gap:10px;margin:6px 0;font-size:14px}' +
+    '.ck-row.t{font-size:18px;font-weight:700;border-top:1px solid #c9d3e2;padding-top:10px;margin-top:10px}' +
+    '.ck-ln{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:6px 0;border-bottom:1px solid #e1e7f0}' +
+    '.ck-cod{display:flex;gap:8px;margin-top:12px}.ck-cod input{flex:1;min-width:0}' +
+    '.ck-box .btn:not(.o){background:#14243a!important;color:#fff!important;-webkit-text-fill-color:#fff!important}' +
+    '.ck-box .btn.o{background:#fff!important;border:2px solid #14243a!important}' +
+    '.ck-box .lab{color:#4a5a70!important;-webkit-text-fill-color:#4a5a70!important}';
   document.head.appendChild(st);
 
   function calc() {
@@ -44,39 +50,39 @@
   }
 
   function op(name, val, sel, tit, desc) {
-    return '<label class="fin-op' + (sel ? ' on' : '') + '"><input type="radio" name="' + name + '" value="' + val + '"' + (sel ? ' checked' : '') + '><span><b>' + tit + '</b><small>' + desc + '</small></span></label>';
+    return '<label class="ck-op' + (sel ? ' sel' : '') + '"><input type="radio" name="' + name + '" value="' + val + '"' + (sel ? ' checked' : '') + '><span><b>' + tit + '</b><small>' + desc + '</small></span></label>';
   }
 
   function cuerpo() {
     if (F.entrega === 'envio' && F.pago === 'tienda') F.pago = 'yape';
     var c = calc(), saldo = r2(c.total - c.adel);
-    var p1 = '<div class="fin-box"><h3>1. Tus datos</h3>' +
+    var p1 = '<div class="ck-box"><h3>1. Tus datos</h3>' +
       '<label class="fl">Nombre y apellido<input id="fin-nombre" autocomplete="name" value="' + esc(F.nombre) + '" placeholder="Ej. María Quispe"></label>' +
       '<label class="fl">Celular / WhatsApp<input id="fin-tel" inputmode="numeric" maxlength="9" autocomplete="tel" value="' + esc(F.tel) + '" placeholder="9XXXXXXXX"></label></div>';
-    var p2 = '<div class="fin-box"><h3>2. ¿Cómo recibes tu pedido?</h3>' +
+    var p2 = '<div class="ck-box"><h3>2. ¿Cómo recibes tu pedido?</h3>' +
       op('fin-entrega', 'recojo', F.entrega === 'recojo', 'Recojo en tienda · Gratis', 'Recoges en la tienda de Cusco. Coordinamos el horario por WhatsApp.') +
       op('fin-entrega', 'envio', F.entrega === 'envio', 'Envío en Cusco · ' + money(ENVIO), 'Gratis desde S/ 129.90 en tu compra. Lo llevamos a tu dirección en la ciudad de Cusco.') +
       (F.entrega === 'envio' ? '<label class="fl">Dirección y referencia<input id="fin-dir" autocomplete="street-address" value="' + esc(F.dir) + '" placeholder="Calle, número y referencia"></label>' : '') + '</div>';
-    var p3 = '<div class="fin-box"><h3>3. ¿Cómo pagas?</h3>' +
+    var p3 = '<div class="ck-box"><h3>3. ¿Cómo pagas?</h3>' +
       op('fin-pago', 'yape', F.pago === 'yape', 'Yape · adelanto del 50%', 'Pagas ' + money(c.adel) + ' con el QR de Yape y el saldo al recibir tu pedido.') +
       op('fin-pago', 'whatsapp', F.pago === 'whatsapp', 'WhatsApp · coordinar el pago', 'Enviamos tu pedido por WhatsApp y la tienda te indica las formas de pago disponibles.') +
       (F.entrega === 'recojo' ? op('fin-pago', 'tienda', F.pago === 'tienda', 'Pagar al recoger en tienda', 'Reservas hoy y pagas cuando recojas tu pedido.') : '') + '</div>';
     var lns = c.lines.map(function (l) {
-      return '<div class="fin-ln"><span>' + esc(l.c.n) + ' · ' + esc(l.x.col) + ' · talla ' + esc(l.x.sz) + '</span><b>' + money(l.price) + '</b></div>';
+      return '<div class="ck-ln"><span>' + esc(l.c.n) + ' · ' + esc(l.x.col) + ' · talla ' + esc(l.x.sz) + '</span><b>' + money(l.price) + '</b></div>';
     }).join('');
     var btn = F.pago === 'yape' ? 'Continuar al pago con Yape' : (F.pago === 'tienda' ? 'Reservar mi pedido' : 'Enviar pedido por WhatsApp');
-    var res = '<aside class="fin-side"><div class="fin-box"><h3>Resumen</h3>' + lns +
-      '<div class="fin-row" style="margin-top:10px"><span>Subtotal</span><span>' + money(c.sub) + '</span></div>' +
-      (c.desc ? '<div class="fin-row"><span>Descuento por compra múltiple</span><span>− ' + money(c.desc) + '</span></div>' : '') +
-      (c.cd ? '<div class="fin-row"><span>Código ' + esc(F.cod.k) + '</span><span>− ' + money(c.cd) + '</span></div>' : '') +
-      '<div class="fin-row"><span>Entrega</span><span>' + (F.entrega === 'envio' ? (c.env ? money(c.env) : 'Envío gratis') : 'Recojo gratis') + '</span></div>' +
-      '<div class="fin-row t"><span>Total</span><span>' + money(c.total) + '</span></div>' +
-      (F.pago === 'yape' ? '<div class="fin-row"><span>Pagas ahora (50%)</span><b>' + money(c.adel) + '</b></div><div class="fin-row"><span>Saldo al recibir</span><span>' + money(saldo) + '</span></div>' : '') +
-      '<div class="fin-cod"><input id="fin-cod" placeholder="Código de descuento" value="' + esc(F.codigo) + '" autocomplete="off"><button type="button" class="btn o sm" id="fin-aplicar">Aplicar</button></div>' +
+    var res = '<aside class="ck-side"><div class="ck-box"><h3>Resumen</h3>' + lns +
+      '<div class="ck-row" style="margin-top:10px"><span>Subtotal</span><span>' + money(c.sub) + '</span></div>' +
+      (c.desc ? '<div class="ck-row"><span>Descuento por compra múltiple</span><span>− ' + money(c.desc) + '</span></div>' : '') +
+      (c.cd ? '<div class="ck-row"><span>Código ' + esc(F.cod.k) + '</span><span>− ' + money(c.cd) + '</span></div>' : '') +
+      '<div class="ck-row"><span>Entrega</span><span>' + (F.entrega === 'envio' ? (c.env ? money(c.env) : 'Envío gratis') : 'Recojo gratis') + '</span></div>' +
+      '<div class="ck-row t"><span>Total</span><span>' + money(c.total) + '</span></div>' +
+      (F.pago === 'yape' ? '<div class="ck-row"><span>Pagas ahora (50%)</span><b>' + money(c.adel) + '</b></div><div class="ck-row"><span>Saldo al recibir</span><span>' + money(saldo) + '</span></div>' : '') +
+      '<div class="ck-cod"><input id="fin-cod" placeholder="Código de descuento" value="' + esc(F.codigo) + '" autocomplete="off"><button type="button" class="btn o sm" id="fin-aplicar">Aplicar</button></div>' +
       (F.codmsg ? '<p class="lab" style="margin:6px 0 0">' + esc(F.codmsg) + '</p>' : '') +
       '<button type="button" class="btn" id="fin-confirmar" style="width:100%;margin-top:14px">' + btn + '</button>' +
       '<p class="lab" style="margin:8px 0 0">Cambio de talla sin costo · Atención por WhatsApp</p></div></aside>';
-    return '<div class="fin-grid"><div>' + p1 + p2 + p3 + '</div>' + res + '</div>';
+    return '<div class="ck-grid"><div>' + p1 + p2 + p3 + '</div>' + res + '</div>';
   }
 
   function pintar() { var r = document.getElementById('fin-root'); if (r) r.innerHTML = cuerpo(); }
