@@ -414,7 +414,7 @@
     if (!Fotos.url || !c) { m.textContent = 'Elige tu foto y una prenda.'; return; }
     var f = Catalogo.foto(c, ST.col);
     if (!f) { m.textContent = 'Esta prenda no tiene imagen para la IA.'; return; }
-    go.disabled = true; out.innerHTML = '<span class="pv6-loading"><i class="pv6-spin"></i> Generando…</span>';
+    go.disabled = true; out.innerHTML = '<span class="pv6-loading"><i class="pv6-spin"></i> Generando… puede tardar 1–2 min si hay cola.</span>';
     fetch(Fotos.url).then(function (r) { return r.blob(); }).then(function (b) {
       return HFVton.simular(b, f, c.n, function (t) { m.textContent = t; });
     }).then(function (u) {
@@ -424,7 +424,8 @@
       try { window.track('probador6_ia_ok', c.n); } catch (e) {}
     }).catch(function (e) {
       out.innerHTML = '';
-      m.textContent = 'La IA gratuita no respondió (cola llena, cuota agotada o servicio caído). Inténtalo en unos minutos; mientras tanto puedes usar el montaje ilustrativo.';
+      var det = (e && e.message) ? ' (' + String(e.message).slice(0, 80) + ')' : '';
+      m.textContent = 'La IA gratuita no respondió: cola llena, cuota agotada o servicio caído' + det + '. Inténtalo en unos minutos; mientras tanto puedes usar el montaje ilustrativo.';
       console.warn('HFVton', e);
     }).then(function () { go.disabled = !$1('#pv6-ia-ok').checked; });
   }
