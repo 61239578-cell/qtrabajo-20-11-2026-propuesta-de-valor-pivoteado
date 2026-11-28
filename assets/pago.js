@@ -112,6 +112,22 @@
 
   if (typeof TT !== 'undefined') { TT.finalizar = 'Finalizar compra | Smart Fit Cusco'; TT.gracias = 'Pedido registrado | Smart Fit Cusco'; }
 
+   function aplicar() {
+    var k = String(F.codigo || '').trim().toUpperCase();
+    if (!k) { F.cod = null; F.codmsg = ''; pintar(); return; }
+    F.codmsg = 'Validando código…'; pintar();
+    var n = 'sfv' + Date.now(), s = document.createElement('script');
+    window[n] = function (r) {
+      delete window[n]; s.remove();
+      if (r && r.ok) { F.cod = { k: k, p: r.descuento / 100, t: r.descuento + '% de descuento en tu compra' }; F.codmsg = 'Código aplicado: ' + F.cod.t + '.'; }
+      else { F.cod = null; F.codmsg = (r && r.mensaje) || 'No pudimos validar el código. Inténtalo de nuevo.'; }
+      pintar();
+    };
+    s.onerror = function () { delete window[n]; s.remove(); F.cod = null; F.codmsg = 'No pudimos validar el código. Inténtalo de nuevo.'; pintar(); };
+    s.src = (window.CONFIG || CFG).ENDPOINT + '?validar_cupon=' + encodeURIComponent(k) + '&callback=' + n;
+    document.body.appendChild(s);
+  }
+  function aplicarAntiguo() {
   function aplicar() {
     var k = String(F.codigo || '').trim().toUpperCase(), d = CODIGOS[k];
     F.codigo = k;
@@ -137,6 +153,7 @@
       codigo_seguimiento: crearCodigoSeguimiento(),
       canal: canal, cliente: nom, telefono: tel,
       items: cart.map(function (x) { return byId(x.id).n + ' (' + x.col + ', talla ' + x.sz + ')'; }).join(' | '),
+      cantidad: cart.length, total: c.total, estado: 'Nuevo', entrega: F.entrega, codigo_descuento: F.cod ? F.cod.k : '',
       cantidad: cart.length, total: c.total, estado: 'Nuevo',
       line_items: cart.map(function (x) { return { id: x.id, talla: x.sz, color: x.col, cantidad: Number(x.qty) || 1 }; }),
       detalle: 'pedido ' + canal + ' · ' + (F.entrega === 'envio' ? 'envío Cusco: ' + F.dir.trim() : 'recojo en tienda') + (F.cod ? ' · código ' + F.cod.k : '')
