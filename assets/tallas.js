@@ -166,7 +166,8 @@
     head(); Lia.step(1);
     var m = M(), g = S.gender, rs = resumen(m, g, S.pref);
     var ls = ['Leyendo tus medidas…', 'Pecho ' + m.pecho + ' · Cintura ' + m.cintura + ' · Cadera ' + m.cadera + ' cm', 'Comparando con cada tipo de prenda…', '¡Análisis listo!'];
-    st.innerHTML = '<div class="two holo-layout"><div class="fig scan holo-fig" id="fg"><i></i>' + holoAnalysis(m) + '</div><div><h3>Análisis por tipo de prenda</h3><p class="lab">Ajuste elegido: ' + PREF[S.pref] + '. Cada prenda se compara con las zonas que sí importan para ella.</p><ul class="log" id="lg"></ul><div id="res"></div></div></div>';
+    st.innerHTML = '<div class="two holo-layout"><div class="fig holo-fig" id="fg"><div id="v3d" style="width:100%;height:420px;border-radius:14px;background:radial-gradient(circle at 50% 40%,#16345c,#07162e)"></div><p class="lab" style="text-align:center;margin-top:8px">Arrastra para girar · modelo generado con tus medidas</p></div><div><h3>Análisis por tipo de prenda</h3><p class="lab">Ajuste elegido: ' + PREF[S.pref] + '. Cada prenda se compara con las zonas que sí importan para ella.</p><ul class="log" id="lg"></ul><div id="res"></div></div></div>';
+    visor3d($('#v3d'), m, g);
     ls.forEach(function (t, i) {
       setTimeout(function () {
         if (S.n != 1 || !$('#lg')) return;
@@ -310,6 +311,56 @@
         msg.textContent = 'Estimado (error típico de 6 a 8 cm). Corrige los números con tu cinta y el modelo 3D se actualiza solo.';
       }).catch(function () { msg.textContent = 'No se pudo cargar el detector. Revisa tu conexión e inténtalo otra vez.'; }).then(function () { go.disabled = false; });
     };
+  }
+  function visor3d(el, m, g) {
+    if (!el) return;
+    if (!window.THREE) { el.innerHTML = holoAnalysis(m); return; }
+    var W = el.clientWidth || 360, HT = el.clientHeight || 420, H = m.altura, k = 1 / (2 * Math.PI), hom = g === 'hombre';
+    var rP = m.pecho * k, rC = m.cintura * k, rH = m.cadera * k, EX = 1.148, EZ = 0.827;
+    var sc = new THREE.Scene(), cam = new THREE.PerspectiveCamera(30, W / HT, 1, 1000);
+    cam.position.set(0, H * 0.5, H * 2.3); cam.lookAt(0, H * 0.5, 0);
+    var rd = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    rd.setSize(W, HT); rd.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    el.innerHTML = ''; el.appendChild(rd.domElement);
+    var G = new THREE.Group(); sc.add(G);
+    var fill = new THREE.MeshBasicMaterial({ color: 0x0b2a4a, transparent: true, opacity: 0.6 });
+    var wire = new THREE.MeshBasicMaterial({ color: 0x5ad1ff, wireframe: true, transparent: true, opacity: 0.45 });
+    function add(geo, x, y, z, sx, sy, sz, rz) {
+      [fill, wire].forEach(function (mt) { var o = new THREE.Mesh(geo, mt); o.position.set(x || 0, y || 0, z || 0); o.scale.set(sx || 1, sy || 1, sz || 1); o.rotation.z = rz || 0; G.add(o); });
+    }
+    var pr = [[rH * 0.7, 0.46], [rH, 0.52], [rC, 0.62], [rP, 0.72], [rP * (hom ? 1 : 0.85), 0.8], [6, 0.84], [5.5, 0.87]]
+      .map(function (a) { return new THREE.Vector2(a[0], a[1] * H); });
+    add(new THREE.LatheGeometry(new THREE.SplineCurve(pr).getPoints(48), 32), 0, 0, 0, EX, 1, EZ);
+    [-1, 1].forEach(function (s) {
+      add(new THREE.CylinderGeometry(rH * 0.5, 3.2, H * 0.46, 20), s * rH * 0.6, H * 0.23, 0);
+      add(new THREE.CylinderGeometry(3.4, 2.4, H * 0.33, 14), s * (rP * EX + 4.5), H * 0.64, 0, 1, 1, 1, s * 0.07);
+    });
+    add(new THREE.SphereGeometry(H * 0.055, 24, 18), 0, H * 0.935, 0, 1, 1.2, 1);
+    function lbl(t, y) {
+      var c = document.createElement('canvas'); c.width = 320; c.height = 64; var x = c.getContext('2d');
+      x.fillStyle = 'rgba(8,22,46,.9)'; x.fillRect(0, 0, 320, 64); x.strokeStyle = '#e0b45a'; x.lineWidth = 3; x.strokeRect(2, 2, 316, 60);
+      x.fillStyle = '#fff'; x.font = 'bold 28px Arial'; x.textAlign = 'center'; x.fillText(t, 160, 42);
+      var s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false }));
+      s.scale.set(H * 0.36, H * 0.072, 1); s.position.set(H * 0.3, y, 0); sc.add(s);
+    }
+    [[rP, 0.72, hom ? 'Pecho' : 'Busto', m.pecho], [rC, 0.62, 'Cintura', m.cintura], [rH, 0.52, 'Cadera', m.cadera]].forEach(function (a) {
+      var ring = new THREE.Mesh(new THREE.TorusGeometry(a[0] + 0.6, 0.35, 6, 72), new THREE.MeshBasicMaterial({ color: 0xffc857 }));
+      ring.rotation.x = Math.PI / 2; ring.scale.set(EX, EZ, 1); ring.position.y = a[1] * H; G.add(ring);
+      lbl(a[2] + ' · ' + a[3] + ' cm', a[1] * H);
+    });
+    var scan = new THREE.Mesh(new THREE.TorusGeometry(rH * 1.5, 0.25, 4, 64), new THREE.MeshBasicMaterial({ color: 0x9be7ff, transparent: true, opacity: 0.8 }));
+    scan.rotation.x = Math.PI / 2; sc.add(scan);
+    var t = 0, drag = false, lx = 0, auto = true, cv = rd.domElement;
+    cv.style.touchAction = 'pan-y';
+    cv.onpointerdown = function (e) { drag = true; auto = false; lx = e.clientX; try { cv.setPointerCapture(e.pointerId); } catch (x) {} };
+    cv.onpointermove = function (e) { if (drag) { G.rotation.y += (e.clientX - lx) * 0.01; lx = e.clientX; } };
+    cv.onpointerup = function () { drag = false; };
+    (function loop() {
+      if (!document.body.contains(cv)) { rd.dispose(); if (rd.forceContextLoss) rd.forceContextLoss(); return; }
+      t += 0.016; if (auto) G.rotation.y = Math.sin(t * 0.5) * 0.7;
+      scan.position.y = (Math.sin(t * 1.3) * 0.5 + 0.5) * H;
+      rd.render(sc, cam); requestAnimationFrame(loop);
+    })();
   }
   var renderOrig = window.render;
   window.render = function () {
