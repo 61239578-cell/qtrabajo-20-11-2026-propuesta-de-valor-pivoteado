@@ -362,10 +362,81 @@
       rd.render(sc, cam); requestAnimationFrame(loop);
     })();
   }
+  function limpiar() {
+    setTimeout(function () {
+      document.querySelectorAll('#stage .holo-ref,#stage .refb,#stage .holo-person').forEach(function (e) { if (!e.closest('#v3d,#v3d0')) e.remove(); });
+    }, 0);
+    setTimeout(function () {
+      document.querySelectorAll('#stage .holo-ref,#stage .refb,#stage .holo-person').forEach(function (e) { if (!e.closest('#v3d,#v3d0')) e.remove(); });
+    }, 900);
+  }
+  function visor3d(el, m, g) {
+    if (!el) return;
+    if (!window.THREE) { el.innerHTML = '<p class="lab" style="color:#cfe3ff">No se pudo cargar el visor 3D.</p>'; return; }
+    var W = el.clientWidth || 360, HT = el.clientHeight || 420, H = m.altura, k = 1 / (2 * Math.PI), hom = g === 'hombre';
+    var rP = m.pecho * k, rC = m.cintura * k, rH = m.cadera * k, EX = 1.148, EZ = 0.827, ar = Math.max(3.2, rP * 0.27), V = THREE.Vector2;
+    var sc = new THREE.Scene(), cam = new THREE.PerspectiveCamera(28, W / HT, 1, 1000);
+    cam.position.set(0, H * 0.5, H * 2.6); cam.lookAt(0, H * 0.5, 0);
+    var rd = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    rd.setSize(W, HT); rd.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    el.innerHTML = ''; el.appendChild(rd.domElement);
+    sc.add(new THREE.AmbientLight(0xffffff, 0.75));
+    var dl = new THREE.DirectionalLight(0xffffff, 0.8); dl.position.set(60, H * 1.2, 120); sc.add(dl);
+    var rl = new THREE.DirectionalLight(0x5ad1ff, 0.6); rl.position.set(-80, H, -100); sc.add(rl);
+    var G = new THREE.Group(); sc.add(G);
+    function mat(c) { return new THREE.MeshPhongMaterial({ color: c, shininess: 25, side: THREE.DoubleSide }); }
+    var skin = mat(0xd4a284), top = mat(hom ? 0x2c4f7c : 0x1f4e8c), pant = mat(0x181b22), shoe = mat(0xe8e8ee);
+    function lathe(pts) { return new THREE.LatheGeometry(new THREE.SplineCurve(pts.map(function (a) { return new V(a[0], a[1]); })).getPoints(40), 28); }
+    function put(geo, mt, x, y, z, sx, sy, sz, parent) { var o = new THREE.Mesh(geo, mt); o.position.set(x || 0, y || 0, z || 0); o.scale.set(sx || 1, sy || 1, sz || 1); (parent || G).add(o); return o; }
+    /* torso: perímetros fieles a tus cm (elipse) */
+    put(lathe([[rH * .86, .47 * H], [rH, .52 * H], [(rH + rC) / 2, .57 * H], [rC, .62 * H], [(rC + rP) / 2, .67 * H], [rP, .72 * H], [rP * .97, .77 * H], [rP * .88, .81 * H], [H * .034, .835 * H]]), top, 0, 0, 0, EX, 1, EZ);
+    /* piernas y pies */
+    var lp = [[rH * .56, .47 * H], [rH * .54, .40 * H], [rH * .38, .29 * H], [rH * .37, .2 * H], [rH * .2, .07 * H], [rH * .19, .03 * H]];
+    [-1, 1].forEach(function (s) {
+      put(lathe(lp), pant, s * rH * EX * .5, 0, 0, 1, 1, .92);
+      put(new THREE.SphereGeometry(rH * .2, 16, 12), shoe, s * rH * EX * .5, H * .018, H * .02, 1.1, .55, 2.4);
+    });
+    /* brazos */
+    var L = .36 * H, ap = [[ar * .3, -L], [ar * .34, -.86 * L], [ar * .62, -.62 * L], [ar * .62, -.5 * L], [ar * .9, -.25 * L], [ar * .95, 0]];
+    [-1, 1].forEach(function (s) {
+      var p = new THREE.Group(); p.position.set(s * (rP * EX + ar * .55), .795 * H, 0); p.rotation.z = s * .1; G.add(p);
+      put(lathe(ap), skin, 0, 0, 0, 1, 1, 1, p); put(new THREE.SphereGeometry(ar * 1.02, 16, 12), top, 0, 0, 0, 1, 1, 1, p);
+    });
+    /* cuello y cabeza */
+    put(new THREE.CylinderGeometry(H * .03, H * .034, H * .08, 16), skin, 0, .86 * H, 0);
+    put(new THREE.SphereGeometry(H * .056, 24, 18), skin, 0, .935 * H, 0, 1, 1.22, 1.05);
+    /* base luminosa */
+    var fl = put(new THREE.CircleGeometry(rH * 2.2, 48), new THREE.MeshBasicMaterial({ color: 0x5ad1ff, transparent: true, opacity: .18, side: THREE.DoubleSide }), 0, .5, 0); fl.rotation.x = -Math.PI / 2;
+    function lbl(t, y) {
+      var c = document.createElement('canvas'); c.width = 320; c.height = 64; var x = c.getContext('2d');
+      x.fillStyle = 'rgba(8,22,46,.9)'; x.fillRect(0, 0, 320, 64); x.strokeStyle = '#e0b45a'; x.lineWidth = 3; x.strokeRect(2, 2, 316, 60);
+      x.fillStyle = '#fff'; x.font = 'bold 28px Arial'; x.textAlign = 'center'; x.fillText(t, 160, 42);
+      var s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false }));
+      s.scale.set(H * .3, H * .06, 1); s.position.set(H * .34, y, 0); sc.add(s);
+    }
+    [[rP, .72, hom ? 'Pecho' : 'Busto', m.pecho], [rC, .62, 'Cintura', m.cintura], [rH, .52, 'Cadera', m.cadera]].forEach(function (a) {
+      var ring = new THREE.Mesh(new THREE.TorusGeometry(a[0] + 1.2, .35, 6, 72), new THREE.MeshBasicMaterial({ color: 0xffc857 }));
+      ring.rotation.x = Math.PI / 2; ring.scale.set(EX, EZ, 1); ring.position.y = a[1] * H; G.add(ring);
+      lbl(a[2] + ' · ' + a[3] + ' cm', a[1] * H);
+    });
+    var scan = new THREE.Mesh(new THREE.TorusGeometry(rH * 1.7, .25, 4, 64), new THREE.MeshBasicMaterial({ color: 0x9be7ff, transparent: true, opacity: .8 }));
+    scan.rotation.x = Math.PI / 2; sc.add(scan);
+    var t = 0, drag = false, lx = 0, auto = true, cv = rd.domElement;
+    cv.style.touchAction = 'pan-y';
+    cv.onpointerdown = function (e) { drag = true; auto = false; lx = e.clientX; try { cv.setPointerCapture(e.pointerId); } catch (x) {} };
+    cv.onpointermove = function (e) { if (drag) { G.rotation.y += (e.clientX - lx) * .01; lx = e.clientX; } };
+    cv.onpointerup = function () { drag = false; };
+    (function loop() {
+      if (!document.body.contains(cv)) { rd.dispose(); if (rd.forceContextLoss) rd.forceContextLoss(); return; }
+      t += .016; if (auto) G.rotation.y = Math.sin(t * .5) * .7;
+      scan.position.y = (Math.sin(t * 1.3) * .5 + .5) * H;
+      rd.render(sc, cam); requestAnimationFrame(loop);
+    })();
+  }
   var renderOrig = window.render;
   window.render = function () {
     var st = $('#stage'); if (!st) return;
-    S.pref = S.pref || 'normal';
+    S.pref = S.pref || 'normal'; limpiar();
     if (S.n === 0) p0(st); else if (S.n === 1) p1(st); else if (S.n === 2) p2(st);
     else { renderOrig(); if (S.n === 3) nota(); }
   };
