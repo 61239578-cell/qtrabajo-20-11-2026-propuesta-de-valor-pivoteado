@@ -134,6 +134,8 @@
       '<div class="gender-pick"><span class="lab" style="margin:0">¿Qué prendas buscas?</span>' + chips('gender', S.gender, { mujer: '♀ Mujer', hombre: '♂ Hombre' }) + '</div>' +
       '<details open style="border:1px solid var(--line);padding:14px;margin:12px 0"><summary class="up" style="cursor:pointer">¿Cómo tomar tus medidas?</summary><div style="font-size:14px;margin-top:12px"><p><b>Pecho / busto:</b> parte más ancha del torso, cinta horizontal.</p><p><b>Cintura:</b> alrededor de la cintura, sin apretar.</p><p><b>Cadera:</b> parte más ancha de cadera y glúteos.</p><p><b>Estatura:</b> de pie, sin zapatos, contra una pared (la usamos para el largo de vestidos, pantalones y faldas).</p></div></details>' +
       '<div class="f">' + ['altura|Estatura', 'pecho|Pecho', 'cintura|Cintura', 'cadera|Cadera'].map(function (x) { var a = x.split('|'); return '<label>' + a[1] + ' (cm)<input type="number" inputmode="numeric" id="m_' + a[0] + '" value="' + S.m[a[0]] + '"></label>'; }).join('') + '</div>' +
+      '<div id="v3d0" style="width:100%;height:340px;border-radius:14px;margin:12px 0;background:radial-gradient(circle at 50% 40%,#16345c,#07162e);color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px"></div>' +
+      '<details style="border:1px solid var(--line);padding:14px;margin:12px 0"><summary class="up" style="cursor:pointer">¿No tienes cinta? Estima con 2 fotos</summary><p class="lab">De pie, cuerpo entero, fondo liso, buena luz y ropa ajustada. Frente: brazos separados del cuerpo. Perfil: de lado, brazos hacia abajo. Escribe tu estatura antes. Las fotos se analizan en tu dispositivo y no se suben a ningún servidor.</p><label>Foto de frente<input type="file" accept="image/*" id="ph_f"></label><label>Foto de perfil<input type="file" accept="image/*" id="ph_p"></label><button class="btn o" id="ph_go" type="button">Estimar mis medidas</button><p class="lab" id="ph_msg"></p></details>' +
       '<div class="gender-pick" style="margin-top:12px"><span class="lab" style="margin:0">¿Cómo te gusta que te quede?</span>' + chips('pref', S.pref, PREF) + '</div>' +
       '<label style="text-transform:none;letter-spacing:0;display:flex;gap:8px;align-items:center;margin-top:8px"><input type="checkbox" id="rm" style="width:auto"' + (S.mem ? ' checked' : '') + '> Recordar mis medidas en este dispositivo</label>' +
       (S.mem ? '<p class="lab">Estamos usando tus medidas guardadas. <a href="#" id="fg3">Borrar mis datos guardados</a></p>' : '') +
@@ -155,6 +157,7 @@
       track('medidas_analizadas', 'talla base ' + tn(S.sx) + ' · ' + BODY[S.body] + ' · ajuste ' + S.pref);
       go(1);
     };
+    bindFotos(); prev();
     function keep() { ['altura', 'pecho', 'cintura', 'cadera'].forEach(function (k) { var e = $('#m_' + k); if (e) S.m[k] = e.value; }); }
   }
 
@@ -248,6 +251,66 @@
     row.insertAdjacentHTML('beforebegin', '<div class="mod" style="margin:12px 0;padding:12px"><p class="up">Por qué esta talla</p>' + ul(expl(it, r).concat(e && e.estado !== 'ok' ? [stockTxt(e)] : [])) + '</div>');
   }
 
+  var PL = null, tmr;
+  function cargarPose() {
+    if (PL) return PL;
+    var V = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
+    PL = import(V + '/vision_bundle.mjs').then(function (v) {
+      return v.FilesetResolver.forVisionTasks(V + '/wasm').then(function (f) {
+        return v.PoseLandmarker.createFromOptions(f, { baseOptions: { modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task' }, runningMode: 'IMAGE', numPoses: 1, outputSegmentationMasks: true });
+      });
+    });
+    PL.catch(function () { PL = null; });
+    return PL;
+  }
+  function leerImg(f) { return new Promise(function (ok, no) { var im = new Image(); im.onload = function () { ok(im); }; im.onerror = no; im.src = URL.createObjectURL(f); }); }
+  function achicar(im) { var s = Math.min(1, 720 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * s); c.height = Math.round(im.height * s); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); return c; }
+  function siluetas(pl, cv) {
+    var r = pl.detect(cv);
+    if (!r.landmarks.length || !r.segmentationMasks || !r.segmentationMasks.length) return null;
+    var mk = r.segmentationMasks[0], W = mk.width, H = mk.height, d = mk.getAsFloat32Array(), lm = r.landmarks[0];
+    var cx = Math.round((lm[11].x + lm[12].x + lm[23].x + lm[24].x) / 4 * W);
+    function span(y) { var o = y * W; if (d[o + cx] <= 0.5) return 0; var a = cx, b = cx; while (a > 0 && d[o + a - 1] > 0.5) a--; while (b < W - 1 && d[o + b + 1] > 0.5) b++; return b - a + 1; }
+    function any(y) { var o = y * W; for (var x = 0; x < W; x++) if (d[o + x] > 0.5) return true; return false; }
+    var top = -1, bot = -1; for (var y = 0; y < H; y++) if (any(y)) { if (top < 0) top = y; bot = y; }
+    var sy = (lm[11].y + lm[12].y) / 2 * H, hy = (lm[23].y + lm[24].y) / 2 * H, L = hy - sy;
+    function pick(y0, y1, fn) { var best = null; for (var y = Math.round(y0); y <= Math.round(y1); y++) { var w = span(y); if (!w) continue; if (best === null || fn(w, best)) best = w; } return best || 0; }
+    var out = { h: bot - top + 1, pecho: span(Math.round(sy + L * 0.3)), cintura: pick(sy + L * 0.45, sy + L * 0.85, function (w, b) { return w < b; }), cadera: pick(hy - L * 0.05, hy + L * 0.35, function (w, b) { return w > b; }) };
+    mk.close(); return out;
+  }
+  function estimar(pl, cvF, cvP, alt) {
+    var f = siluetas(pl, cvF); if (!f) return null;
+    var p = cvP ? siluetas(pl, cvP) : null, kf = alt / f.h, kp = p ? alt / p.h : 0, out = {};
+    ['pecho', 'cintura', 'cadera'].forEach(function (z) {
+      var a = f[z] * kf / 2, b = (p && p[z]) ? p[z] * kp / 2 : a * 0.72; if (!a) return;
+      out[z] = Math.round(Math.PI * (3 * (a + b) - Math.sqrt((3 * a + b) * (a + 3 * b))));
+    });
+    return out;
+  }
+  function prev() {
+    var el = $('#v3d0'); if (!el) return;
+    ['altura', 'pecho', 'cintura', 'cadera'].forEach(function (k) { var e = $('#m_' + k); if (e) S.m[k] = e.value; });
+    var m = M(), ok = m.altura >= 120 && m.altura <= 210 && m.pecho >= 70 && m.pecho <= 170 && m.cintura >= 55 && m.cintura <= 160 && m.cadera >= 75 && m.cadera <= 180;
+    if (!ok) { el.innerHTML = '<p class="lab" style="color:#cfe3ff">Ingresa tus 4 medidas y verás aquí tu modelo 3D</p>'; return; }
+    visor3d(el, m, S.gender);
+  }
+  function bindFotos() {
+    var go = $('#ph_go'); if (!go) return;
+    ['altura', 'pecho', 'cintura', 'cadera'].forEach(function (k) { var e = $('#m_' + k); if (e) e.oninput = function () { clearTimeout(tmr); tmr = setTimeout(prev, 300); }; });
+    go.onclick = function () {
+      var msg = $('#ph_msg'), ff = $('#ph_f').files[0], fp = $('#ph_p').files[0], alt = +$('#m_altura').value, pl;
+      if (!(alt >= 120 && alt <= 210)) { msg.textContent = 'Primero escribe tu estatura (arriba).'; return; }
+      if (!ff) { msg.textContent = 'Sube al menos la foto de frente.'; return; }
+      go.disabled = true; msg.textContent = 'Cargando el detector (la primera vez tarda unos segundos)…';
+      cargarPose().then(function (x) { pl = x; msg.textContent = 'Analizando tus fotos en tu dispositivo…'; return Promise.all([leerImg(ff), fp ? leerImg(fp) : null]); }).then(function (im) {
+        var r = estimar(pl, achicar(im[0]), im[1] ? achicar(im[1]) : null, alt);
+        if (!r || !r.pecho || !r.cintura || !r.cadera) { msg.textContent = 'No pude detectar tu cuerpo completo. Usa una foto de pie, cuerpo entero, fondo liso y buena luz.'; return; }
+        ['pecho', 'cintura', 'cadera'].forEach(function (z) { $('#m_' + z).value = r[z]; });
+        prev();
+        msg.textContent = 'Estimado (error típico de 6 a 8 cm). Corrige los números con tu cinta y el modelo 3D se actualiza solo.';
+      }).catch(function () { msg.textContent = 'No se pudo cargar el detector. Revisa tu conexión e inténtalo otra vez.'; }).then(function () { go.disabled = false; });
+    };
+  }
   var renderOrig = window.render;
   window.render = function () {
     var st = $('#stage'); if (!st) return;
